@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth theme transition */
+html {
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+/*  */
+.box {
+  color: #6366f1; /* primary */
+  color: #4f46e5; /* secondary */
+  color: #f9a8d4; /* accent */
+  color: #f9fafb; /* lightBg */
+  color: #1f2937; /*darkBg  */
+  color: #111827; /* lightText */
+  color: #e5e7eb; /*  darkText*/
+  color: #575a60; /* textSecondary */
+  color: #d1d5db; /*lightBorder  */
+  color: #374151; /* darkBorder */
+  color: #f9fafb; /*lightElements  */
+  color: #252945; /* darkElements */
+  color: #e5e7eb; /* lightShadow */
+  color: #1a202c; /* darkShadow */
+  color: #ffffff; /* lightCard */
+  color: #252945; /* darkCard */
+  color: #f3f4f6; /* lightHover */
+  color: #303c55; /* darkHover */
+  color: #10b981; /*success  */
+  color: #ef4444; /* error */
+  color: #f59e0b; /* warning */
+}
