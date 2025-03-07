@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Jobs = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -8,6 +9,8 @@ const Jobs = () => {
     experience: "",
     location: "",
   });
+
+  const navigate = useNavigate();
 
   const jobs = [
     {
@@ -153,7 +156,8 @@ const Jobs = () => {
         {jobs.map((job, index) => (
           <div
             key={index}
-            className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
+            className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow cursor-pointer"
+            onClick={() => navigate("/job-details")}
           >
             <h3 className="text-lg font-semibold">{job.title}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -162,7 +166,7 @@ const Jobs = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {job.type} - {job.salary}
             </p>
-            <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg">
+            <button className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
               Apply Now
             </button>
           </div>

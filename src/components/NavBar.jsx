@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import ThemeToggle from "./ThemeToggle";
 import {
@@ -12,10 +12,9 @@ import Menu from "./Menu";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [openDashboard, setOpenDashboard] = useState(false);
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const searchRef = useRef(null);
   const dashboardRef = useRef(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,16 +23,14 @@ const NavBar = () => {
         setIsOpen(false);
       }
       if (
-        // dashboardRef.current &&
+        dashboardRef.current &&
         !dashboardRef.current.contains(event.target)
       ) {
-        // setTimeout(() => setOpenDashboard(false), 100); // Small delay
-        console.log("handleClickOutside");
+        setIsDashboardOpen(false);
       }
     };
 
     document.addEventListener("click", handleClickOutside);
-
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
@@ -72,35 +69,35 @@ const NavBar = () => {
               />
             </div>
           </div>
+          {/* Dashboard Button */}
           <div
-            className={`md:hidden ${
-              isOpen
-                ? "hidden md:p-1 md:text-white"
-                : "group relative transition-all p-1 text-white border border-lightBorder hover:bg-gray-300 dark:hover:bg-gray-700 text-sm hover:text-primary md:dark:hover:text-darkText rounded-xl cursor-pointer"
-            }`}
-            onClick={() => {
-              console.log("dashboard"), setOpenDashboard((prev) => !prev);
-            }}
+            ref={dashboardRef}
+            id="dashboard"
+            className={`${
+              isOpen && "hidden"
+            } md:hidden group relative transition-all p-1 text-white border border-lightBorder hover:bg-gray-300 dark:hover:bg-gray-700 text-sm hover:text-primary rounded-xl cursor-pointer`}
+            onClick={() => setIsDashboardOpen((prev) => !prev)}
           >
             Dashboard
-            {/* {openDashboard && ( */}
-            <div
-              ref={dashboardRef}
-              className={`${
-                openDashboard ? "block" : "hidden"
-              } absolute top-[30px] right-0 w-full text-lightText bg-lightBg dark:bg-darkBg dark:text-darkText shadow-md rounded-xl border p-1 divide-y`}
-            >
-              <p
-                className="p-1 hover:text-primary"
-                onClick={() => {
-                  setOpenDashboard(false), navigate("/employer-dashboard");
-                }}
+            {isDashboardOpen && (
+              <div
+                id="dashboardDropdown"
+                className="absolute top-[30px] right-0 w-full text-lightText bg-lightBg dark:bg-darkBg dark:text-darkText shadow-md rounded-xl border p-1 divide-y"
               >
-                Employer
-              </p>
-              <p className="p-1 hover:text-primary">Mentor</p>
-            </div>
-            {/* )} */}
+                <p
+                  className="p-1 hover:text-primary cursor-pointer"
+                  onClick={() => navigate("/employer-dashboard")}
+                >
+                  Employer
+                </p>
+                <p
+                  className="p-1 hover:text-primary cursor-pointer"
+                  onClick={() => navigate("/mentor-dashboard")}
+                >
+                  Mentor
+                </p>
+              </div>
+            )}
           </div>
           <div
             className="hidden md:block relative transition-all p-1 text-white dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary cursor-pointer z-20"

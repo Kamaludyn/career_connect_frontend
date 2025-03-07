@@ -6,14 +6,24 @@ import Mentorship from "./pages/Mentorship";
 import Resources from "./pages/Resources";
 import Jobs from "./pages/Jobs";
 import SkillDev from "./pages/SkillDev";
-import Events from "./pages/Events";
-import CommunityQA from "./pages/CommunityQA";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 import SignUp from "./pages/SignUp";
 import JobDetails from "./pages/JobDetails";
 import MentorProfile from "./pages/MentorProfile";
-import EmployerDashboard from "./pages/EmployerDashboardPages/EmployerDashboard";
+import EmployerDashboard from "./pages/EmployerDashboard";
+import MentorsDashboard from "./pages/MentorsDashboard";
+import ResourceDetails from "./pages/ResourceDetails";
+import AdminLayout from "./admin/AdminLayout";
+import Overview from "./admin/pages/Overview";
+import StudentsMgt from "./admin/pages/StudentsMgt";
+import MentorsMgt from "./admin/pages/MentorsMgt";
+import EmployersMgt from "./admin/pages/EmployersMgt";
+import JobsMgt from "./admin/pages/JobsMgt";
+import Reports from "./admin/pages/Reports";
+import NotificationsMgt from "./admin/pages/NotificationMgt";
+import Login from "./pages/Login";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const router = createBrowserRouter([
@@ -28,6 +38,10 @@ function App() {
         {
           path: "/sign-up",
           element: <SignUp />,
+        },
+        {
+          path: "/login",
+          element: <Login />,
         },
         {
           path: "/messages",
@@ -46,16 +60,12 @@ function App() {
           element: <Resources />,
         },
         {
+          path: "/resource-details",
+          element: <ResourceDetails />,
+        },
+        {
           path: "/skill-development",
           element: <SkillDev />,
-        },
-        {
-          path: "/events",
-          element: <Events />,
-        },
-        {
-          path: "/community-q-and-a",
-          element: <CommunityQA />,
         },
         {
           path: "/profile",
@@ -70,6 +80,10 @@ function App() {
           element: <MentorProfile />,
         },
         {
+          path: "/mentor-dashboard",
+          element: <MentorsDashboard />,
+        },
+        {
           path: "/job-details",
           element: <JobDetails />,
         },
@@ -79,7 +93,53 @@ function App() {
         },
       ],
     },
+    {
+      path: "/dashboard",
+      element: <AdminLayout />,
+
+      children: [
+        {
+          path: "",
+          element: <Overview />,
+        },
+        {
+          path: "students-management",
+          element: <StudentsMgt />,
+        },
+        {
+          path: "mentors-management",
+          element: <MentorsMgt />,
+        },
+        {
+          path: "employers-management",
+          element: <EmployersMgt />,
+        },
+        {
+          path: "jobs-management",
+          element: <JobsMgt />,
+        },
+        {
+          path: "reports",
+          element: <Reports />,
+        },
+        {
+          path: "notifications",
+          element: <NotificationsMgt />,
+        },
+      ],
+    },
   ]);
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toaster position="top-center" />
+    </>
+  );
 }
 export default App;
+
+// (    <>
+// <RouterProvider router={router} />
+// <Toaster position="top-right" reverseOrder={false} />
+//   </>
+// )

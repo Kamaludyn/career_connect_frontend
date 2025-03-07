@@ -15,8 +15,6 @@ const MentorProfile = () => {
       "Python",
       "Data Visualization",
     ],
-    mentees: 25,
-    availability: "Open for mentorship",
   };
 
   return (
@@ -46,12 +44,6 @@ const MentorProfile = () => {
           </li>
         ))}
       </ul>
-      <p className="text-md text-gray-700 dark:text-gray-300 mt-4">
-        Mentees: {mentor.mentees}
-      </p>
-      <p className="text-md text-gray-700 dark:text-gray-300">
-        Availability: {mentor.availability}
-      </p>
       <button className="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600">
         Request Mentorship
       </button>

@@ -6,10 +6,28 @@
 html {
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
+
+/* Custom header background color */
+.custom-header {
+  background-color: #b4b5b8 !important; /* Dark blue header */
+  color: white !important;
+  font-weight: bold;
+  text-align: left;
+  padding: 12px;
+}
+
+.custom-header:last-child {
+  border-top-right-radius: 5px;
+}
+
+.custom-header:first-child {
+  border-top-left-radius: 5px;
+}
+
 /*  */
 .box {
   color: #6366f1; /* primary */
-  color: #4f46e5; /* secondary */
+  color: #e5ab46; /* secondary */
   color: #f9a8d4; /* accent */
   color: #f9fafb; /* lightBg */
   color: #1f2937; /*darkBg  */

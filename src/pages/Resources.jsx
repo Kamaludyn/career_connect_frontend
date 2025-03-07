@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Resources = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("");
+  const navigate = useNavigate();
 
   const resources = [
     {
@@ -72,9 +74,15 @@ const Resources = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {resource.description}
             </p>
-            <a href={resource.link} className="mt-2 inline-block text-blue-600">
+            <button
+              className="mt-2 inline-block text-blue-600"
+              onClick={() => navigate("/resource-details")}
+            >
               Read More
-            </a>
+            </button>
+            {/* <a href={resource.link} className="mt-2 inline-block text-blue-600">
+              Read More
+            </a> */}
           </div>
         ))}
       </section>

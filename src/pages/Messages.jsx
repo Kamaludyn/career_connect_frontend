@@ -30,7 +30,7 @@ const Messages = () => {
 
   return (
     <div className="w-full min-h-screen flex bg-gray-100 dark:bg-gray-900 text-black dark:text-white rounded-xl">
-      {/* Sidebar - Show only on larger screens or when chat is not selected on small screens */}
+      {/* Sidebar - Show only on larger screens or when a chat is not selected on small screens */}
       <div
         className={`w-full sm:w-1/3 md:w-1/4 bg-white dark:bg-gray-800 p-4 border-r dark:border-gray-700  rounded-xl sm:rounded-e-none
         ${selectedChat ? "hidden sm:block" : "block"}`}

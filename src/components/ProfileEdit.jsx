@@ -33,7 +33,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
   // }
   return (
     <div
-      className={`w-full p-6 bg-white dark:bg-gray-900 rounded-xl shadow ${
+      className={`w-full p-6 bg-white dark:bg-gray-900 dark:text-darkText rounded-xl shadow ${
         isOpen ? "block" : "hidden"
       }`}
     >
@@ -54,7 +54,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
           name="fullName"
           value={profileData.fullName}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         />
       </div>
 
@@ -64,7 +64,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
           name="email"
           value={profileData.email}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg cursor-not-allowed"
           disabled
         />
       </div>
@@ -75,7 +75,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
           name="phone"
           value={profileData.phone}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         />
       </div>
 
@@ -85,7 +85,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
           name="location"
           value={profileData.location}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         />
       </div>
 
@@ -95,7 +95,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
         <select
           value={userType}
           onChange={(e) => setUserType(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         >
           <option value="jobSeeker">Job Seeker</option>
           <option value="employer">Employer</option>
@@ -110,7 +110,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
             name="skills"
             value={profileData.skills}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
           />
 
           <label className="block mt-4">Experience</label>
@@ -118,7 +118,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
             name="experience"
             value={profileData.experience}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
           ></textarea>
         </div>
       )}
@@ -130,7 +130,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
             name="companyInfo"
             value={profileData.companyInfo}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
           />
         </div>
       )}
@@ -142,7 +142,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
             name="expertise"
             value={profileData.expertise}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
           />
 
           <label className="block mt-4">Availability</label>
@@ -150,7 +150,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
             name="availability"
             value={profileData.availability}
             onChange={handleChange}
-            className="w-full p-2 border rounded"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
           ></textarea>
         </div>
       )}
@@ -162,7 +162,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
           name="bio"
           value={profileData.bio}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         ></textarea>
       </div>
 
@@ -172,7 +172,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
           name="linkedin"
           value={profileData.linkedin}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         />
       </div>
 
@@ -182,7 +182,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
           name="portfolio"
           value={profileData.portfolio}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         />
       </div>
 
@@ -192,7 +192,7 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
           name="achievements"
           value={profileData.achievements}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         ></textarea>
       </div>
 

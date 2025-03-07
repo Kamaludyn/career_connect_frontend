@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import ThemeToggle from "./ThemeToggle";
 import {
   BsBook,
-  BsBookshelf,
   BsBriefcase,
   BsEnvelope,
   BsHouse,
@@ -128,10 +127,7 @@ const Menu = ({ isOpen }) => {
               </li>
             </NavLink>
           ))}
-          <li
-            className="relative group text-lg mx-1 font-medium cursor-pointer"
-            onClick={() => navigate("/employer-dashboard")}
-          >
+          <li className="relative group text-lg mx-1 font-medium cursor-pointer">
             <span className="h-full w-full p-2 border border-text-primary hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary rounded-2xl">
               Dashboard
             </span>
@@ -142,29 +138,14 @@ const Menu = ({ isOpen }) => {
               >
                 Employer
               </p>
-              <p className="p-1 hover:text-primary">Mentor</p>
+              <p
+                className="p-1 hover:text-primary"
+                onClick={() => navigate("/mentor-dashboard")}
+              >
+                Mentor
+              </p>
             </div>
           </li>
-          {/* <li className="py-3 px-2 text-lg font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary ">
-            Home
-          </li>
-          <li className="py-3 px-2 text-lg font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary">
-            Mentorship
-          </li>
-          <li className="py-3 px-2 text-lg font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary">
-            Jobs
-          </li>
-          <li className="py-3 px-2 text-lg font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary">
-            Resources
-          </li>
-          <li className="py-3 px-2 text-lg font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary">
-            Network
-          </li>
-          <li className="text-lg mx-1 font-medium cursor-pointer">
-            <span className="h-full w-full p-2 border border-text-primary hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary rounded-3xl">
-              For Employers
-            </span>
-          </li> */}
         </ul>
       </section>
     </>
