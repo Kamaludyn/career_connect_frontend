@@ -1,46 +1,49 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 import { BsPersonCircle } from "react-icons/bs";
 
-const mockMentees = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    role: "Frontend Developer",
-    image: "https://via.placeholder.com/50",
-  },
-  {
-    id: 2,
-    name: "Bob Smith",
-    role: "Data Scientist",
-    image: "https://via.placeholder.com/50",
-  },
-  {
-    id: 3,
-    name: "Charlie Brown",
-    role: "Backend Developer",
-    image: "https://via.placeholder.com/50",
-  },
-];
-
 const MenteesList = () => {
-  const [mentees, setMentees] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [mentees, setMentees] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
+  const navigate = useNavigate();
+
+  // UseEffect to fetch Accepted Mentees
   useEffect(() => {
-    setTimeout(() => {
-      setMentees(mockMentees);
-      setLoading(false);
-    }, 1000);
+    const fetchAcceptedMentees = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get("/mentorships");
+        // Filtering the response to get mentees that have been accepted
+        const myMentees = response.data
+          .filter((res) => res.status === "accepted")
+          .map((res) => res.mentee);
+
+        setMentees(myMentees);
+      } catch (error) {
+        console.error("Failed to Fetch My Mentees");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAcceptedMentees();
   }, []);
 
-  const filteredMentees = mentees.filter((mentee) =>
-    mentee.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filter the mentees based on the search query
+  const filteredMentees = mentees?.filter((mentee) => {
+    return (
+      mentee.surname.toLowerCase().includes(search.toLowerCase()) ||
+      mentee.othername.toLowerCase().includes(search.toLowerCase())
+    );
+  });
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4 dark:text-darkText">Mentees List</h2>
+      <h2 className="text-xl font-semibold mb-4 dark:text-darkText">
+        Mentees List
+      </h2>
       <input
         type="text"
         placeholder="Search Mentees..."
@@ -49,28 +52,42 @@ const MenteesList = () => {
         className="border p-2 mb-4 w-full rounded-2xl"
       />
       {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul className="mt-2 p-2 md:p-4 space-y-2 bg-lightBg dark:bg-gray-800 rounded-2xl">
-          {filteredMentees.map((mentee) => (
-            <>
+        <ul className="w-full p-4 bg-lightBg dark:bg-gray-800 rounded-2xl ">
+          {[...Array(5)].map((_, index) => (
             <li
-              key={mentee.id}
-              className="flex items-center p-2 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md"
+              key={index}
+              className="flex justify-between p-2 mt-2 rounded-md animate-pulse bg-gray-200 dark:bg-gray-700"
             >
-              {/* <img
-                src={mentee.image}
-                alt={mentee.name}
-                className="w-12 h-12 rounded-full mr-3"
-              /> */}
-              <BsPersonCircle className="h-12 w-12 mr-3 rounded-full text-lightText dark:text-darkText" />
-              <div>
-                <p className="font-medium dark:text-darkText">{mentee.name}</p>
-                <p className="text-sm text-gray-600">{mentee.role}</p>
+              <div className="w-full h-12 flex gap-2 dark:text-darkText">
+                <div className="h-full w-12 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                <div className="self-center h-6 w-[25%] bg-gray-300 dark:bg-gray-600 rounded"></div>
+                <div className="self-center h-6 w-[25%] bg-gray-300 dark:bg-gray-600 rounded"></div>
               </div>
             </li>
-            <hr></hr>
-            </>
+          ))}
+        </ul>
+      ) : (
+        <ul className="mt-2 p-2 md:p-4 space-y-2 bg-lightBg dark:bg-gray-800 rounded-2xl">
+          {filteredMentees?.map((mentee) => (
+            <li
+              key={mentee._id}
+              className="flex items-center p-2 pb-0 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md"
+            >
+              <BsPersonCircle className="h-12 w-12 mr-3 rounded-full text-lightText dark:text-darkText" />
+              <div>
+                <p
+                  className="font-medium dark:text-darkText hover:underline"
+                  onClick={() =>
+                    navigate(`/student-profile/${mentee._id}`, {
+                      state: { user: mentee },
+                    })
+                  }
+                >
+                  {mentee.othername} {mentee.surname}
+                </p>
+              </div>
+              <hr className="mt-2"></hr>
+            </li>
           ))}
         </ul>
       )}

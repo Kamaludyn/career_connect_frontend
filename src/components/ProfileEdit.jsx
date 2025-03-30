@@ -1,41 +1,41 @@
-import React, { useState } from "react";
-import { BsChevronLeft } from "react-icons/bs";
+import { useState, useEffect } from "react";
+import api from "../services/api";
+import { toast } from "react-hot-toast";
 
-const ProfileEdit = ({ isOpen, setIsOpen }) => {
-  const [userType, setUserType] = useState("jobSeeker");
-  const [profileData, setProfileData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    location: "",
-    profilePicture: "",
-    skills: "",
-    experience: "",
-    resume: "",
-    companyInfo: "",
-    jobPostings: "",
-    expertise: "",
-    availability: "",
-    bio: "",
-    linkedin: "",
-    portfolio: "",
-    achievements: "",
-  });
+const ProfileEdit = ({ isOpen, setIsOpen, profileInfo, setProfileInfo }) => {
+  const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState(profileInfo || {});
 
-  const handleChange = (e) => {
-    setProfileData({ ...profileData, [e.target.name]: e.target.value });
+  useEffect(() => {
+    setProfileData(profileInfo);
+  }, [profileInfo]);
+
+  // Submit updated profile data
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await api.patch("/auth/profile", profileData);
+      setProfileInfo(response.data);
+      toast.success("Profile Updated Successfully");
+    } catch (error) {
+      if (error.message === "Network Error") {
+        toast.error(error.message);
+      } else {
+        toast.error("An Error Occurred while updating profile");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
-  // function handleClick(e) {
-  //   // e.stopPropagation();
-  //   console.log("Back");
 
-  //   setIsOpen(false);
-  // }
   return (
-    <div
+    <form
       className={`w-full p-6 bg-white dark:bg-gray-900 dark:text-darkText rounded-xl shadow ${
         isOpen ? "block" : "hidden"
       }`}
+      onSubmit={handleSubmit}
     >
       <div className="mb-3">
         <p
@@ -47,162 +47,288 @@ const ProfileEdit = ({ isOpen, setIsOpen }) => {
       </div>
       <h2 className="text-2xl font-bold">Edit Profile</h2>
 
-      {/* Basic Info */}
       <div className="mt-4">
-        <label className="block">Full Name</label>
+        <label className="block">Surname</label>
         <input
-          name="fullName"
-          value={profileData.fullName}
-          onChange={handleChange}
+          type="text"
+          value={profileData.surname || ""}
+          onChange={(e) =>
+            setProfileData({ ...profileData, surname: e.target.value })
+          }
+          name="surname"
           className="w-full p-2 border dark:text-lightText rounded-lg"
         />
       </div>
 
       <div className="mt-4">
-        <label className="block">Email</label>
+        <label className="block">Other Name</label>
         <input
-          name="email"
-          value={profileData.email}
-          onChange={handleChange}
-          className="w-full p-2 border dark:text-lightText rounded-lg cursor-not-allowed"
-          disabled
+          type="text"
+          value={profileData.othername || ""}
+          onChange={(e) =>
+            setProfileData({ ...profileData, othername: e.target.value })
+          }
+          name="othername"
+          className="w-full p-2 border dark:text-lightText rounded-lg"
         />
       </div>
 
       <div className="mt-4">
         <label className="block">Phone</label>
         <input
+          type="number"
+          value={profileData.phone || ""}
+          onChange={(e) =>
+            setProfileData({ ...profileData, phone: e.target.value })
+          }
           name="phone"
-          value={profileData.phone}
-          onChange={handleChange}
           className="w-full p-2 border dark:text-lightText rounded-lg"
         />
       </div>
 
       <div className="mt-4">
-        <label className="block">Location</label>
-        <input
-          name="location"
-          value={profileData.location}
-          onChange={handleChange}
-          className="w-full p-2 border dark:text-lightText rounded-lg"
-        />
-      </div>
-
-      {/* User Type Specific Fields */}
-      <div className="mt-6">
-        <label className="block">User Type</label>
-        <select
-          value={userType}
-          onChange={(e) => setUserType(e.target.value)}
-          className="w-full p-2 border dark:text-lightText rounded-lg"
-        >
-          <option value="jobSeeker">Job Seeker</option>
-          <option value="employer">Employer</option>
-          <option value="mentor">Mentor</option>
-        </select>
-      </div>
-
-      {userType === "jobSeeker" && (
-        <div className="mt-4">
-          <label className="block">Skills</label>
-          <input
-            name="skills"
-            value={profileData.skills}
-            onChange={handleChange}
-            className="w-full p-2 border dark:text-lightText rounded-lg"
-          />
-
-          <label className="block mt-4">Experience</label>
-          <textarea
-            name="experience"
-            value={profileData.experience}
-            onChange={handleChange}
-            className="w-full p-2 border dark:text-lightText rounded-lg"
-          ></textarea>
-        </div>
-      )}
-
-      {userType === "employer" && (
-        <div className="mt-4">
-          <label className="block">Company Info</label>
-          <input
-            name="companyInfo"
-            value={profileData.companyInfo}
-            onChange={handleChange}
-            className="w-full p-2 border dark:text-lightText rounded-lg"
-          />
-        </div>
-      )}
-
-      {userType === "mentor" && (
-        <div className="mt-4">
-          <label className="block">Expertise</label>
-          <input
-            name="expertise"
-            value={profileData.expertise}
-            onChange={handleChange}
-            className="w-full p-2 border dark:text-lightText rounded-lg"
-          />
-
-          <label className="block mt-4">Availability</label>
-          <textarea
-            name="availability"
-            value={profileData.availability}
-            onChange={handleChange}
-            className="w-full p-2 border dark:text-lightText rounded-lg"
-          ></textarea>
-        </div>
-      )}
-
-      {/* Additional Info */}
-      <div className="mt-6">
         <label className="block">Bio</label>
         <textarea
           name="bio"
-          value={profileData.bio}
-          onChange={handleChange}
+          value={profileData.bio || ""}
+          onChange={(e) =>
+            setProfileData({ ...profileData, bio: e.target.value })
+          }
           className="w-full p-2 border dark:text-lightText rounded-lg"
         ></textarea>
       </div>
 
-      <div className="mt-4">
-        <label className="block">LinkedIn</label>
-        <input
-          name="linkedin"
-          value={profileData.linkedin}
-          onChange={handleChange}
-          className="w-full p-2 border dark:text-lightText rounded-lg"
-        />
-      </div>
+      {profileInfo.role !== "employer" && (
+        <div className="mt-4">
+          <label className="block">Skills</label>
+          <input
+            type="text"
+            value={profileData.skills || ""}
+            onChange={(e) =>
+              setProfileData({ ...profileData, skills: e.target.value })
+            }
+            name="skills"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+          />
+        </div>
+      )}
 
-      <div className="mt-4">
-        <label className="block">Portfolio</label>
-        <input
-          name="portfolio"
-          value={profileData.portfolio}
-          onChange={handleChange}
-          className="w-full p-2 border dark:text-lightText rounded-lg"
-        />
-      </div>
+      {profileInfo.role !== "employer" && (
+        <div className="space-y-2 mt-4">
+          <label className="block">Education</label>
+          <input
+            type="text"
+            value={profileData.education?.school || ""}
+            onChange={(e) =>
+              setProfileData({
+                ...profileData,
+                education: {
+                  ...profileData.education,
+                  school: e.target.value,
+                },
+              })
+            }
+            name="eduSchool"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+            placeholder="School"
+          />
+          <input
+            type="text"
+            value={profileData.education?.degree || ""}
+            onChange={(e) =>
+              setProfileData({
+                ...profileData,
+                education: {
+                  ...profileData.education,
+                  degree: e.target.value,
+                },
+              })
+            }
+            name="eduDegree"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+            placeholder="Degree"
+          />
+          <input
+            type="number"
+            value={profileData.education?.year || ""}
+            onChange={(e) =>
+              setProfileData({
+                ...profileData,
+                education: {
+                  ...profileData.education,
+                  year: e.target.value,
+                },
+              })
+            }
+            name="eduYear"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+            placeholder="Year"
+          />
+        </div>
+      )}
 
-      <div className="mt-4">
-        <label className="block">Achievements</label>
-        <textarea
-          name="achievements"
-          value={profileData.achievements}
-          onChange={handleChange}
-          className="w-full p-2 border dark:text-lightText rounded-lg"
-        ></textarea>
-      </div>
+      {profileInfo.role === "student" && (
+        <div className="mt-4">
+          <label className="block">Level</label>
+          <input
+            type="number"
+            value={profileData.level || ""}
+            onChange={(e) =>
+              setProfileData({ ...profileData, level: e.target.value })
+            }
+            name="level"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+          />
+        </div>
+      )}
+
+      {profileInfo.role !== "employer" && (
+        <div className="space-y-2 mt-4">
+          <label className="block">Certifications</label>
+          <input
+            type="text"
+            value={profileData.certifications?.name || ""}
+            onChange={(e) =>
+              setProfileData({
+                ...profileData,
+                certifications: {
+                  ...profileData.certifications,
+                  name: e.target.value,
+                },
+              })
+            }
+            name="certName"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+            placeholder="Certification Name"
+          />
+          <input
+            type="number"
+            value={profileData.certifications?.year || ""}
+            onChange={(e) =>
+              setProfileData({
+                ...profileData,
+                certifications: {
+                  ...profileData.certifications,
+                  year: e.target.value,
+                },
+              })
+            }
+            name="certYear"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+            placeholder="Year Obtained"
+          />
+        </div>
+      )}
+
+      {profileInfo.role !== "employer" && (
+        <div className="mt-4">
+          <label className="block">Experience</label>
+          <input
+            type="text"
+            value={profileData.experience || ""}
+            onChange={(e) =>
+              setProfileData({ ...profileData, experience: e.target.value })
+            }
+            name="experience"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+          />
+        </div>
+      )}
+
+      {profileInfo.role !== "student" && (
+        <div className="mt-4">
+          <label className="block">Industry</label>
+          <input
+            type="text"
+            value={profileData.industry || ""}
+            onChange={(e) =>
+              setProfileData({ ...profileData, industry: e.target.value })
+            }
+            name="industry"
+            className="w-full p-2 border dark:text-lightText rounded-lg"
+          />
+        </div>
+      )}
+      {profileInfo.role === "mentor" && (
+        <>
+          <div className="mt-4">
+            <label className="block">Job Title</label>
+            <input
+              type="text"
+              value={profileData.jobTitle || ""}
+              onChange={(e) =>
+                setProfileData({ ...profileData, jobTitle: e.target.value })
+              }
+              name="jobTitle"
+              className="w-full p-2 border dark:text-lightText rounded-lg"
+            />
+          </div>
+          <div className="mt-4">
+            <label htmlFor="availability" className="font-semibold">
+              Availability
+            </label>
+            <div>
+              <div>Available for Mentorship</div>
+              <input
+                type="radio"
+                name="availability"
+                value="true"
+                checked={profileData.availability === true}
+                onChange={() =>
+                  setProfileData({ ...profileData, availability: true })
+                }
+              />
+              <div>Not Available for Mentorship</div>
+              <input
+                type="radio"
+                name="availability"
+                value="false"
+                checked={profileData.availability === false}
+                onChange={() =>
+                  setProfileData({ ...profileData, availability: false })
+                }
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {profileInfo === "employer" && (
+        <>
+          <div className="mt-4">
+            <label className="block">Company Name</label>
+            <input
+              type="text"
+              value={profileData.companyName || ""}
+              onChange={(e) =>
+                setProfileData({ ...profileData, companyName: e.target.value })
+              }
+              name="companyName"
+              className="w-full p-2 border dark:text-lightText rounded-lg"
+            />
+          </div>
+          <div className="mt-4">
+            <label className="block">Website</label>
+            <input
+              type="text"
+              value={profileData.website || ""}
+              onChange={(e) =>
+                setProfileData({ ...profileData, website: e.target.value })
+              }
+              name="website"
+              className="w-full p-2 border dark:text-lightText rounded-lg"
+            />
+          </div>
+        </>
+      )}
 
       <button
+        type="submit"
         className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg"
-        onClick={() => setIsOpen(false)}
       >
         Save Changes
       </button>
-    </div>
+    </form>
   );
 };
 

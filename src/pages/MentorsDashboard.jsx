@@ -39,7 +39,7 @@ const MentorsDashboard = () => {
           }`}
           onClick={() => setActiveTab("resources")}
         >
-          Resources
+          My Resources
         </button>
       </nav>
 

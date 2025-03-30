@@ -1,104 +1,82 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import api from "../services/api";
+import ReactMarkdown from "react-markdown";
+import { MdChevronLeft } from "react-icons/md";
+import { toast } from "react-hot-toast";
 
 const ResourceDetails = () => {
+  const [resource, setResource] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  // Extract the `id` parameter from the URL using `useParams`
+  const { id } = useParams();
+
+  const navigate = useNavigate();
+
+// useEffect hook to fetch a selected resource data when the component mounts or when `id` changes
+  useEffect(() => {
+     // Function to fetch resource details from the API
+    const fetchResource = async () => {
+      setLoading(true);
+      try {
+        // Send a GET request to fetch resource details using the resource ID
+        const response = await api.get(`/resources/${id}`);
+
+       // Update state with the fetched resource data
+       setResource(response.data);
+      } catch (error) {
+          // Show an error notification if the API request fails
+        toast.error("An Error Occurred while fetching the resource material");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Call the function
+    fetchResource();
+  }, [id]);
+
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-lg">
-      {/* Title Section */}
-      <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white">
-        Resume Writing Tips
-      </h1>
-      <p className="text-center text-gray-600 dark:text-gray-400 mt-2">
-        A step-by-step guide to crafting a winning resume.
-      </p>
-
-      {/* Content Section */}
-      <div className="mt-6 space-y-6 text-gray-700 dark:text-gray-300">
-        {/* Introduction */}
-        <section>
-          <h2 className="text-2xl font-semibold">Why a Strong Resume Matters</h2>
-          <p className="mt-2">
-            Your resume is your first impression to employers. A well-structured resume increases your chances of landing an interview.
+      {loading ? (
+        <>
+          <div className="h-8 w-3/4 mx-auto bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-4 w-1/2 mx-auto bg-gray-300 dark:bg-gray-700 rounded mt-2 animate-pulse"></div>
+          <div className="mt-6 space-y-6">
+            <div className="h-4 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+            <div className="h-4 w-5/6 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+            <div className="h-[60vh] w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+          </div>
+        </>
+      ) : (
+        <>
+          <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white">
+            {resource?.title}
+          </h1>
+          <p className="text-center text-gray-600 dark:text-gray-400 mt-2">
+            {resource?.description}
           </p>
-        </section>
-
-        {/* Step 1: Contact Information */}
-        <section>
-          <h2 className="text-2xl font-semibold">1. Include Your Contact Information</h2>
-          <ul className="list-disc pl-6 mt-2">
-            <li>Full Name</li>
-            <li>Email Address (Professional)</li>
-            <li>Phone Number</li>
-            <li>LinkedIn Profile (if available)</li>
-          </ul>
-        </section>
-
-        {/* Step 2: Write a Strong Summary */}
-        <section>
-          <h2 className="text-2xl font-semibold">2. Craft a Compelling Summary</h2>
-          <p className="mt-2">
-            The summary should be a **2-3 sentence** introduction that highlights your key skills and experience. Example:
+          <div className="mt-6 space-y-2 text-gray-700 dark:text-gray-300 overflow-auto break-words">
+            <div className="whitespace-pre-wrap break-words">
+              <ReactMarkdown>{String(resource?.body)}</ReactMarkdown>
+            </div>
+          </div>
+          <p className="text-gray-700 dark:text-gray-300 italic mt-8">
+            Author:{" "}
+            <span className="text-warning">
+              {resource?.uploadedBy?.othername} {resource?.uploadedBy?.surname}
+            </span>
           </p>
-          <blockquote className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 italic rounded-lg">
-            "Results-driven software engineer with 5+ years of experience in web development, specializing in React and Node.js."
-          </blockquote>
-        </section>
-
-        {/* Step 3: Work Experience */}
-        <section>
-          <h2 className="text-2xl font-semibold">3. Highlight Your Work Experience</h2>
-          <p className="mt-2">
-            List your past jobs in **reverse chronological order** (latest first). Each role should include:
-          </p>
-          <ul className="list-disc pl-6 mt-2">
-            <li>Job Title & Company Name</li>
-            <li>Employment Dates</li>
-            <li>Key Responsibilities & Achievements</li>
-            <li>Use bullet points to make it easy to read.</li>
-          </ul>
-        </section>
-
-        {/* Step 4: Skills Section */}
-        <section>
-          <h2 className="text-2xl font-semibold">4. Showcase Relevant Skills</h2>
-          <p className="mt-2">
-            Include **technical** and **soft skills** relevant to the job. Example:
-          </p>
-          <ul className="list-disc pl-6 mt-2">
-            <li>Technical: JavaScript, React, Node.js, SQL</li>
-            <li>Soft: Communication, Teamwork, Problem-Solving</li>
-          </ul>
-        </section>
-
-        {/* Step 5: Education & Certifications */}
-        <section>
-          <h2 className="text-2xl font-semibold">5. List Your Education & Certifications</h2>
-          <p className="mt-2">
-            Include your highest degree, school name, and graduation year. Also, add relevant certifications like:
-          </p>
-          <ul className="list-disc pl-6 mt-2">
-            <li>Google UX Design Certification</li>
-            <li>AWS Certified Solutions Architect</li>
-          </ul>
-        </section>
-
-        {/* Final Tips */}
-        <section>
-          <h2 className="text-2xl font-semibold">Final Tips</h2>
-          <ul className="list-disc pl-6 mt-2">
-            <li>Keep your resume **1-2 pages long**.</li>
-            <li>Use **clear fonts** like Arial or Roboto.</li>
-            <li>Proofread to avoid **grammar mistakes**.</li>
-            <li>Tailor your resume for **each job application**.</li>
-          </ul>
-        </section>
-      </div>
-
-      {/* Back Button */}
-      <div className="mt-8 text-center">
-        <Link to="/resources" className="text-blue-600 hover:underline">
-          ← Back to Resources
-        </Link>
-      </div>
+        </>
+      )}
+      <button
+        className="flex items-center mt-8 text-center text-blue-600 hover:underline"
+        onClick={() => navigate(-1)}
+      >
+        <MdChevronLeft />
+        Back
+      </button>
     </div>
   );
 };

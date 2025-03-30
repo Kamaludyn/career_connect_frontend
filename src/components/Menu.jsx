@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
-import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "../context/AuthContext";
 import {
   BsBook,
   BsBriefcase,
   BsEnvelope,
   BsHouse,
   BsPeople,
-  BsPerson,
 } from "react-icons/bs";
 import { NavLink, useNavigate } from "react-router-dom";
 
-const Menu = ({ isOpen }) => {
+const Menu = () => {
   const [isVisible, setIsVisible] = useState(true);
+  const { user } = useAuth();
   const navigate = useNavigate();
+
   let lastScrollY = window.scrollY; // Track previous scroll position
 
   useEffect(() => {
@@ -127,25 +128,20 @@ const Menu = ({ isOpen }) => {
               </li>
             </NavLink>
           ))}
-          <li className="relative group text-lg mx-1 font-medium cursor-pointer">
-            <span className="h-full w-full p-2 border border-text-primary hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary rounded-2xl">
-              Dashboard
-            </span>
-            <div className="hidden absolute group-hover:block top-[33px] right-0 w-full text-lightText bg-lightBg dark:bg-darkBg dark:text-darkText shadow-lg rounded-2xl border border-gray-300 dark:border-lightBorder p-1 divide-y">
-              <p
-                className="p-1 hover:text-primary"
-                onClick={() => navigate("/employer-dashboard")}
+          {(user?.role === "mentor" || user?.role === "employer") && (
+            <li className="relative group text-lg mx-1 font-medium cursor-pointer">
+              <span
+                className="h-full w-full p-2 border border-text-primary hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary rounded-2xl"
+                onClick={
+                  user?.role === "mentor"
+                    ? () => navigate("/mentor-dashboard")
+                    : () => navigate("/employer-dashboard")
+                }
               >
-                Employer
-              </p>
-              <p
-                className="p-1 hover:text-primary"
-                onClick={() => navigate("/mentor-dashboard")}
-              >
-                Mentor
-              </p>
-            </div>
-          </li>
+                Dashboard
+              </span>
+            </li>
+          )}
         </ul>
       </section>
     </>

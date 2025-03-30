@@ -13,15 +13,17 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Accessing form inputs
+    
+     // Accessing the form element to retrieve input values
     const signUpForm = e.target;
 
+     // Check if passwords match before proceeding
     if (signUpForm.password.value !== signUpForm.confirmPassword.value) {
       toast.error("Passwords do not match!");
       return;
     }
 
-    // Base data common for all account types
+     // Base object data containing common fields for all account types
     let filteredData = {
       surname: signUpForm.surname.value,
       othername: signUpForm.othername.value,
@@ -31,11 +33,10 @@ const SignUp = () => {
       password: signUpForm.password.value,
     };
 
-    // Add fields dynamically based on account type
+    // Adding fields dynamically based on account type
     if (accountType === "student") {
       filteredData = {
-        ...filteredData,
-
+        ...filteredData, // Keep the base data
         department: signUpForm.department.value,
         level: signUpForm.level.value,
         skills: signUpForm.skills.value || null,
@@ -43,38 +44,50 @@ const SignUp = () => {
       };
     }
 
+    if (accountType === "mentor") {
+      filteredData = {
+        ...filteredData, // Keep the base data
+        department: signUpForm.department.value,
+        yearOfGraduation: signUpForm.yearOfGraduation.value,
+        jobTitle: signUpForm.jobTitle.value,
+        companyName: signUpForm.companyName.value,
+        industry: signUpForm.industry.value || null,
+      };
+    }
+
     if (accountType === "employer") {
       filteredData = {
-        ...filteredData,
+        ...filteredData, // Keep the base data
         companyName: signUpForm.companyName.value,
         industry: signUpForm.industry.value,
         website: signUpForm.website.value,
       };
     }
 
-    if (accountType === "mentor") {
-      filteredData = {
-        ...filteredData,
-        department: signUpForm.department.value,
-        yearOfGraduation: signUpForm.yearOfGraduation.value,
-        jobTitle: signUpForm.jobTitle.value,
-        industry: signUpForm.industry.value || null,
-      };
-    }
-
-    console.log("Final Data to Send:", filteredData);
     try {
-      // Send user data to JSON Server
-      const response = await api.post(
-        "http://localhost:5000/users",
-        filteredData
-      );
+      // Send registration request to the API
+      const response = await api.post("/auth/register", filteredData);
 
-      console.log("Sign-up response:", response);
+      // Redirect user to login page after successful registration
       navigate("/login");
+
+      // Clear form fields
       signUpForm.reset();
     } catch (error) {
-      console.error("Sign-up error:", error);
+       // Handle errors
+      if (error.message === "Network Error") {
+        // Network error (e.g., no internet connection)
+        toast.error("Please check your network connection");
+      } else if (error.response.status === 400) {
+        // Bad request (e.g., invalid input data)
+        toast.error(error.response.data.message);
+      } else if (error.response.status === 409) {
+        // Handle duplicate user error (e.g., email already exists)
+        toast.error(error.response.data.message);
+      } else {
+        // Catch-all for any other errors
+        toast.error("An error occured");
+      }
     } finally {
       setLoading(false);
     }
@@ -140,8 +153,8 @@ const SignUp = () => {
           >
             <option value="">Select Account Type</option>
             <option value="student">Student</option>
-            <option value="employer">Employer</option>
             <option value="mentor">Mentor</option>
+            <option value="employer">Employer</option>
           </select>
 
           {/* Dynamic Fields Based on Account Type */}
@@ -177,6 +190,44 @@ const SignUp = () => {
             </div>
           )}
 
+          {accountType === "mentor" && (
+            <>
+              <input
+                type="text"
+                name="department"
+                placeholder="Course Studied"
+                className="w-full p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                name="yearOfGraduation"
+                placeholder="Year of Graduation"
+                className="w-full p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                name="jobTitle"
+                placeholder="Current Job Title"
+                className="w-full p-2 border rounded"
+                required
+              />
+              <input
+                type="text"
+                name="companyName"
+                placeholder="Company Name"
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
+                name="industry"
+                placeholder="Industry"
+                className="w-full p-2 border rounded"
+              />
+            </>
+          )}
+
           {accountType === "employer" && (
             <>
               <input
@@ -203,37 +254,6 @@ const SignUp = () => {
             </>
           )}
 
-          {accountType === "mentor" && (
-            <>
-              <input
-                type="text"
-                name="department"
-                placeholder="Department"
-                className="w-full p-2 border rounded"
-                required
-              />
-              <input
-                type="text"
-                name="yearOfGraduation"
-                placeholder="Year of Graduation"
-                className="w-full p-2 border rounded"
-                required
-              />
-              <input
-                type="text"
-                name="jobTitle"
-                placeholder="Current Job Title"
-                className="w-full p-2 border rounded"
-                required
-              />
-              <input
-                type="text"
-                name="industry"
-                placeholder="Industry"
-                className="w-full p-2 border rounded"
-              />
-            </>
-          )}
           <button
             type="submit"
             className={`w-full bg-secondary hover:bg-opacity-90 text-white py-3 px-3 rounded transition cursor-pointer ${

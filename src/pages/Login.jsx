@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import api from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { toast } from "react-hot-toast";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const { login } = useAuth();
 
   const navigate = useNavigate();
 
@@ -16,23 +19,41 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
+  // Submit login credentials
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const login = e.target;
 
-    console.log("login", login.email.value, login.password.value);
+    // Access the form element
+    const loginForm = e.target;
+
+    // Extracting form values and structuring them into an object
+    const userData = {
+      email: loginForm.email.value,
+      password: loginForm.password.value,
+    };
 
     try {
-      const response = await api.get(
-        `http://localhost:5000/users?email=${login.email.value}&password=${login.password.value}`
-      );
-      console.log("Login successful", response);
+       // Sends a POST request to the authentication endpoint with user credentials
+      const response = await api.post("/auth/login", userData);
+
+      // Stores the authentication token and user data upon successful login
+      login(response.data.token, response.data.user);
+
+      // Navigates the user to the home page after successful login
       navigate("/");
       toast.success("Login Successful");
     } catch (error) {
-      console.error("Error:", error);
-      toast.error("Login Failed");
+       // Handles different error scenarios
+      if (error?.code === "ERR_NETWORK") {
+        toast.error(error?.message);
+      } else if (error?.response?.status === 400) {
+        // If the server returns a 400 status (bad request), show the server's error message
+        toast.error(error?.response?.data.message);
+      } else {
+         // Fallback error message for any other login failures
+        toast.error("Login Failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -53,7 +74,7 @@ const Login = () => {
             className="w-full p-2 border-2 hover:border-secondary outline-none rounded"
             required
           />
-          <div className="w-full flex p-2 pr-2 border-2 hover:border-secondary rounded-md">
+          <div className="dark:bg-white w-full flex p-2 pr-2 border-2 hover:border-secondary rounded-md">
             <input
               type={showPassword ? "text" : "password"}
               name="password"

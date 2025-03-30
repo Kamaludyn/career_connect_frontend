@@ -1,15 +1,17 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { DataProvider } from "./context/DataContext";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import Messages from "./pages/Messages";
 import Mentorship from "./pages/Mentorship";
 import Resources from "./pages/Resources";
 import Jobs from "./pages/Jobs";
-import SkillDev from "./pages/SkillDev";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 import SignUp from "./pages/SignUp";
 import JobDetails from "./pages/JobDetails";
+import StudentProfile from "./pages/StudentProfile";
 import MentorProfile from "./pages/MentorProfile";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import MentorsDashboard from "./pages/MentorsDashboard";
@@ -23,13 +25,21 @@ import JobsMgt from "./admin/pages/JobsMgt";
 import Reports from "./admin/pages/Reports";
 import NotificationsMgt from "./admin/pages/NotificationMgt";
 import Login from "./pages/Login";
+import PrivateRoute from "./components/PrivateRoute";
+import NotFound from "./pages/NotFound";
 import { Toaster } from "react-hot-toast";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <MainLayout />,
+      element: (
+        <AuthProvider>
+          <DataProvider>
+            <MainLayout />,
+          </DataProvider>
+        </AuthProvider>
+      ),
       children: [
         {
           path: "",
@@ -60,31 +70,35 @@ function App() {
           element: <Resources />,
         },
         {
-          path: "/resource-details",
+          path: "/resource-details/:id",
           element: <ResourceDetails />,
         },
         {
-          path: "/skill-development",
-          element: <SkillDev />,
+          path: "/profile",
+          element: (
+            <PrivateRoute>
+              <Profile />,
+            </PrivateRoute>
+          ),
         },
         {
-          path: "/profile",
-          element: <Profile />,
+          path: "/student-profile/:id",
+          element: <StudentProfile />,
+        },
+        {
+          path: "/mentor-profile/:id",
+          element: <MentorProfile />,
         },
         {
           path: "/notifications",
           element: <Notifications />,
         },
         {
-          path: "/mentor-profile",
-          element: <MentorProfile />,
-        },
-        {
           path: "/mentor-dashboard",
           element: <MentorsDashboard />,
         },
         {
-          path: "/job-details",
+          path: "/job-details/:id",
           element: <JobDetails />,
         },
         {
@@ -128,11 +142,20 @@ function App() {
         },
       ],
     },
+    {
+      path: "*",
+      element: <NotFound />,
+    },
   ]);
   return (
     <>
       <RouterProvider router={router} />
-      <Toaster position="top-center" />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+        }}
+      />
     </>
   );
 }

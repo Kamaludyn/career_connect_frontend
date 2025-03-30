@@ -1,8 +1,6 @@
-// import { FaBars } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import ThemeToggle from "../../components/ThemeToggle";
 import { BsPersonCircle, BsList, BsBell, BsCircleFill } from "react-icons/bs";
-// import logo from "../../assets/images/logo/mernMart-name-logo.png";
 
 const Header = ({ toggleMenu }) => {
   const navigate = useNavigate();

@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import Hero from "../components/Hero";
 import React from "react";
 import OnCampusJobs from "../components/OnCampusJobs";
@@ -6,81 +5,6 @@ import OffCampusJobs from "../components/OffCampusJobs";
 import TopMentors from "../components/TopMentors";
 
 const Home = () => {
-  const navigate = useNavigate();
-
-  // const mentors = [
-  //   { name: "Jane Doe", expertise: "Software Engineering", link: "#" },
-  //   { name: "John Smith", expertise: "Data Science", link: "#" },
-  //   { name: "Emily Johnson", expertise: "Product Management", link: "#" },
-  //   { name: "Michael Brown", expertise: "Cybersecurity", link: "#" },
-  // ];
-
-  const trendingJobs = [
-    {
-      title: "Software Engineer",
-      company: "Tech Corp",
-      location: "San, Francisco, CA",
-      onCampus: false,
-    },
-    {
-      title: "Marketing Manager",
-      company: "Biz Group",
-      location: "Commercial No.3, Shop 10",
-      onCampus: true,
-    },
-    {
-      title: "Data Scientist",
-      company: "Data Solutions",
-      location: "San Francisco, CA",
-      onCampus: false,
-    },
-    {
-      title: "Graphic Designer",
-      company: "Creative Inc",
-      location: "Commercial No.2, Shop 6",
-      onCampus: true,
-    },
-    {
-      title: "Product Manager",
-      company: "Innovatech",
-      location: "Remote",
-      onCampus: false,
-    },
-    {
-      title: "Sales Associate",
-      company: "Retail Corp",
-      location: "Commercial No.1, Shop 12",
-      onCampus: true,
-    },
-    {
-      title: "HR Specialist",
-      company: "People First",
-      location: "Austin, TX",
-      onCampus: false,
-    },
-    {
-      title: "Business Analyst",
-      company: "Biz Analytics",
-      location: "Commercial No.1, Shop 9",
-      onCampus: true,
-    },
-    {
-      title: "Customer Support",
-      company: "Support Hub",
-      location: "Remote",
-      onCampus: false,
-    },
-    {
-      title: "UX/UI Designer",
-      company: "Design Studio",
-      location: "Commercial No.2, Shop 7",
-      onCampus: true,
-    },
-  ];
-
-  const campusJobs = trendingJobs.filter((job) => job.onCampus === true);
-  const offCampusJobs = trendingJobs.filter((job) => job.onCampus !== true);
-
   const expertAdvice = [
     {
       expert: "Jane Doe",
@@ -101,8 +25,8 @@ const Home = () => {
         <h2 className="text-2xl font-bold">Recommended for You</h2>
         <div className="mt-4 space-y-3">
           <TopMentors />
-          <OnCampusJobs campusJobs={campusJobs} />
-          <OffCampusJobs offCampusJobs={offCampusJobs} />
+          <OnCampusJobs />
+          <OffCampusJobs />
         </div>
       </section>
 

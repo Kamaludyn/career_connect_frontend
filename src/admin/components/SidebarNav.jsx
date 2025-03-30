@@ -9,7 +9,6 @@ import {
   BsBoxArrowRight,
 } from "react-icons/bs";
 import { NavLink } from "react-router-dom";
-// import AuthContext from "../../context/AuthContext";
 
 const menuItems = [
   {
@@ -50,8 +49,6 @@ const menuItems = [
 ];
 
 const SideBarNav = ({ isOpen, toggleMenu }) => {
-  // const { logout } = useContext(AuthContext);
-
   return (
     <>
       <div
@@ -87,10 +84,7 @@ const SideBarNav = ({ isOpen, toggleMenu }) => {
             </li>
           ))}
           <li className="pt-10">
-            <button
-              className="min-w-full pl-7 py-1 px-3 flex items-center gap-5 rounded-r-full hover:bg-cyan-300"
-              // onClick={logout}
-            >
+            <button className="min-w-full pl-7 py-1 px-3 flex items-center gap-5 rounded-r-full hover:bg-cyan-300">
               <BsBoxArrowRight /> Logout
             </button>
           </li>
