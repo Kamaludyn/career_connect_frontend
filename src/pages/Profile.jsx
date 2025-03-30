@@ -32,8 +32,8 @@ const Profile = () => {
            // Handle specific error scenarios
         if (error?.response?.code === "ERR_NETWORK") {
           toast.error("Network connection lost");
-        } else if (error.response.status === 401) {
-          toast.error(error.response.data.message);
+        } else if (error?.response?.status === 401) {
+          toast.error(error?.response?.data.message);
           navigate("/login");
         }
         console.log("error response", error.response);

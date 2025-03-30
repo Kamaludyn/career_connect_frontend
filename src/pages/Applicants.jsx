@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BsPersonCircle } from "react-icons/bs";
 import api from "../services/api";
+import {toast} from "react-hot-toast"
 
 const Students = () => {
   const [applicants, setApplicants] = useState([]);
