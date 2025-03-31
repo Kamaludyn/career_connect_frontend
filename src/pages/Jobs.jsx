@@ -6,6 +6,7 @@ import JobApplicationModal from "../components/JobApplicationModal";
 import ClipLoader from "react-spinners/ClipLoader";
 
 const Jobs = () => {
+  const [loading, setLoading] = useState({});
   const [redirect, setRedirect] = useState(false);
   const [applicationLink, setsetApplicationLink] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,29 +23,29 @@ const Jobs = () => {
   const handleFilterChange = (e) => {
     setFilter((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,// Update the specific filter based on the dropdown name
+      [e.target.name]: e.target.value, // Update the specific filter based on the dropdown name
     }));
   };
 
-   // Filter the jobs based on the search query and selected filters
+  // Filter the jobs based on the search query and selected filters
   const filteredJobs = jobs?.filter((job) => {
-     // Check if the job title or company matches the search query
+    // Check if the job title or company matches the search query
     const searchJobs =
       job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.company.toLowerCase().includes(searchQuery.toLowerCase());
 
-   // Check if the job type matches the selected filter
-   const filterJobType = filter.jobType === "" || job.type === filter.jobType;
+    // Check if the job type matches the selected filter
+    const filterJobType = filter.jobType === "" || job.type === filter.jobType;
 
-   // Check if the experience level matches the selected filter
-   const filterJobExperience =
-     filter.experience === "" || job.experienceLevel === filter.experience;
+    // Check if the experience level matches the selected filter
+    const filterJobExperience =
+      filter.experience === "" || job.experienceLevel === filter.experience;
 
-   // Check if the location matches the selected filter
-   const filterJobLocation =
-     filter.location === "" || job.location === filter.location;
+    // Check if the location matches the selected filter
+    const filterJobLocation =
+      filter.location === "" || job.location === filter.location;
 
-   // Return true if the job matches all the conditions
+    // Return true if the job matches all the conditions
     return (
       searchJobs && filterJobType && filterJobExperience && filterJobLocation
     );
@@ -59,18 +60,22 @@ const Jobs = () => {
 
     if (!confirmApplication) return;
 
-    // Check if application method is not on site
+    // Check if application method is not handled by CareerConnect
     if (job.applicationMethod !== "careerconnect") {
+      // Redirect to the application link
       setsetApplicationLink(job.applicationLink);
       setRedirect(true);
     } else {
-      setLoading(true)
-      const success = await  applyForJob(job._id);
-      if(success){
-         setLoading(false)
-      } else{
-        toast.error("Job Applicantions Failed")
-      }
+      // If the job application is handled within CareerConnect,
+      // start by setting the loading state to true for this specific job.
+      setLoading((prev) => ({ ...prev, [job._id]: true }));
+
+      // Await the succesful execution of the job application function
+      const success = await applyForJob(job._id);
+
+      // Set the loading state back to false for this specific job.
+      // after the application function completes, regardless of success or failure,
+      setLoading((prev) => ({ ...prev, [job._id]: false }));
     }
   };
 
@@ -156,12 +161,15 @@ const Jobs = () => {
                   {job.maxSalary}
                 </p>
                 <button
-                  className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                  className="min-w-[40%] mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
                   onClick={() => handleClick(job)}
-                  disabled={loading}
+                  disabled={loading[job._id]}
                 >
-                  {loading ? <ClipLoader color="#ffffff" size={18} /> : "Apply Now"}
-                  
+                  {loading[job._id] ? (
+                    <ClipLoader color="white" size={18} className="m-[-3px]" />
+                  ) : (
+                    "Apply Now"
+                  )}
                 </button>
               </div>
             ))}
