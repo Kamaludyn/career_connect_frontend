@@ -5,29 +5,32 @@ import { toast } from "react-hot-toast";
 
 const MentorshipRequests = () => {
   const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-     // Function to fetch mentorship requests from the API
+    // Function to fetch mentorship requests from the API
     const fetchRequest = async () => {
+      setLoading(true);
       try {
-         // HTTP GET request to fetch all mentorship requests
+        // HTTP GET request to fetch all mentorship requests
         const response = await api.get("/mentorships");
 
-         // Update state with the fetched requests
+        // Update state with the fetched requests
         setRequests(response.data);
       } catch (error) {
-         // Log a silent error message if the request fails
+        // Log a silent error message if the request fails
         console.error("Failed to Fetch Requests");
+      } finally {
+        setLoading(false);
       }
     };
     fetchRequest();
   }, []);
 
-// Function to accept a mentorship request
-const acceptRequest = async (requestId) => {
-
-  // Show a confirmation dialog before proceeding
+  // Function to accept a mentorship request
+  const acceptRequest = async (requestId) => {
+    // Show a confirmation dialog before proceeding
     const confirmRequest = confirm(
       "Are you sure you want to accept this request?"
     );
@@ -36,13 +39,13 @@ const acceptRequest = async (requestId) => {
     if (!confirmRequest) return;
 
     try {
-       // Make PUT request to accept the mentorship request
+      // Make PUT request to accept the mentorship request
       const response = await api.put(`/mentorships/${requestId}/accept`);
 
       // Show a success message upon successful acceptance
       toast.success(response.data.message);
 
-       // Update the local state to reflect the accepted request
+      // Update the local state to reflect the accepted request
       setRequests((prevRequests) =>
         prevRequests.map((request) =>
           request._id === requestId
@@ -51,7 +54,7 @@ const acceptRequest = async (requestId) => {
         )
       );
     } catch (error) {
-       // Handle errors based on response status
+      // Handle errors based on response status
       if (error?.response?.status === 404) {
         toast.error(error?.response?.data.message);
       } else if (error?.response?.status === 403) {
@@ -64,19 +67,19 @@ const acceptRequest = async (requestId) => {
 
   // Function to reject a mentorship request
   const rejectRequest = async (requestId) => {
-   // Show a confirmation dialog before proceeding
-   const confirmRequest = confirm(
-    "Are you sure you want to reject this request?"
-);
+    // Show a confirmation dialog before proceeding
+    const confirmRequest = confirm(
+      "Are you sure you want to reject this request?"
+    );
 
-// If the user cancels the action, exit the function
-if (!confirmRequest) return;
+    // If the user cancels the action, exit the function
+    if (!confirmRequest) return;
 
     try {
-        // An HTTP PUT request to reject the mentorship request
+      // An HTTP PUT request to reject the mentorship request
       const response = await api.put(`/mentorships/${requestId}/reject`);
 
-       // Show a success message upon successful rejection
+      // Show a success message upon successful rejection
       toast.success(response.data.message);
 
       // Update the local state to reflect the rejected request
@@ -88,7 +91,7 @@ if (!confirmRequest) return;
         )
       );
     } catch (error) {
-       // Handle errors based on response status
+      // Handle errors based on response status
       if (error?.response?.status === 404) {
         // Not Found
         toast.error(error?.response?.data.message);
@@ -104,7 +107,7 @@ if (!confirmRequest) return;
   return (
     <div className="p-4 dark:text-darkText">
       <h2 className="text-xl font-semibold mb-4">Mentorship Requests</h2>
-      {requests.length === 0 ? (
+      {loading ? (
         <ul className="w-full p-4 bg-lightBg dark:bg-gray-800 rounded-2xl ">
           {[...Array(5)].map((_, index) => (
             <li
@@ -119,6 +122,10 @@ if (!confirmRequest) return;
             </li>
           ))}
         </ul>
+      ) : requests?.length === 0 ? (
+        <p className="p-4 mt-2 md:p-4 dark:text-white bg-lightBg dark:bg-gray-800 rounded-2xl">
+          No request availabnle yet
+        </p>
       ) : (
         <ul className="mt-2 p-2 pb-4 md:p-4 space-y-3 bg-lightBg dark:bg-gray-800 rounded-2xl">
           {requests?.map((req) => (

@@ -66,6 +66,11 @@ const MenteesList = () => {
             </li>
           ))}
         </ul>
+      ) : filteredMentees?.length === 0 ? (
+        <p className="p-4 mt-2 md:p-4 dark:text-white bg-lightBg dark:bg-gray-800 rounded-2xl">
+          You don't have mentees yet, you need to accept mentorship request to
+          see them here
+        </p>
       ) : (
         <ul className="mt-2 p-2 md:p-4 space-y-2 bg-lightBg dark:bg-gray-800 rounded-2xl">
           {filteredMentees?.map((mentee) => (

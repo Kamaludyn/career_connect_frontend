@@ -9,19 +9,19 @@ const MentorshipPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [redirect, setRedirect] = useState(false);
   const [mentorId, setMentorId] = useState(0);
-  
+
   const { mentors } = useData();
 
   const navigate = useNavigate();
 
   const handleClick = (id) => {
     setMentorId(id); // Stores the selected mentor's ID in state
-    
+
     // Sets the redirect state to `true` to navigate to another page or display details
-    setRedirect(true); 
+    setRedirect(true);
   };
 
-  // Filters Mentors Based on Search Query 
+  // Filters Mentors Based on Search Query
   const filteredMentors = mentors?.filter((mentor) => {
     return (
       mentor.surname.toLowerCase().includes(searchQuery) ||
@@ -54,10 +54,10 @@ const MentorshipPage = () => {
             {filteredMentors?.map((mentor) => (
               <div
                 key={mentor._id}
-                className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow cursor-pointer"
+                className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
               >
                 <h3
-                  className="w-fit text-lg font-semibold hover:text-primary active:text-primary hover:underline"
+                  className="w-fit text-lg font-semibold hover:text-primary active:text-primary hover:underline cursor-pointer"
                   onClick={() =>
                     navigate(`/mentor-profile/${mentor._id}`, {
                       state: { mentor },
@@ -84,7 +84,7 @@ const MentorshipPage = () => {
         )}
       </section>
       {redirect && (
-        <MentorshipReqModal mentorId={mentorId} setRedirect={setRedirect}/>
+        <MentorshipReqModal mentorId={mentorId} setRedirect={setRedirect} />
       )}
     </>
   );

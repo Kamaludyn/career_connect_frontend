@@ -15,21 +15,21 @@ const Profile = () => {
 
   // useEffect hook to fetch user profile when the component mounts or when the token changes
   useEffect(() => {
-     // Function to fetch user profile data
+    // Function to fetch user profile data
     const fetchProfile = async () => {
       setLoading(true);
 
-       // If no authentication token is available, exit the function early
+      // If no authentication token is available, exit the function early
       if (!token) return;
 
       try {
         // A GET request to fetch the authenticated user's profile
         const response = await api.get("/auth/profile");
 
-         // Update profile state with fetched data
+        // Update profile state with fetched data
         setProfileInfo(response.data);
       } catch (error) {
-           // Handle specific error scenarios
+        // Handle specific error scenarios
         if (error?.response?.code === "ERR_NETWORK") {
           toast.error("Network connection lost");
         } else if (error?.response?.status === 401) {
@@ -45,29 +45,29 @@ const Profile = () => {
     fetchProfile();
   }, [token]);
 
-// Function to handle user logout
-const handleLogOut = async () => {
-  // Confirm logout action with the user
-  const confirmLogout = confirm("Are you sure you want to Logout?");
-  if (!confirmLogout) return; // Exit if user cancels logout
+  // Function to handle user logout
+  const handleLogOut = async () => {
+    // Confirm logout action with the user
+    const confirmLogout = confirm("Are you sure you want to Logout?");
+    if (!confirmLogout) return;
 
-  try {
+    try {
       // Send a POST request to log the user out
       const response = await api.post("/auth/logout");
 
       // Show success notification on successful logout
       toast.success(response.data.message);
 
-      // Call the logout function (likely clears user session data)
+      // Call the logout function
       logout();
 
       // Redirect user to the login page
       navigate("/login");
-  } catch (error) {
+    } catch (error) {
       // Log any errors that occur during logout
       console.error("Failed to Logout");
-  }
-};
+    }
+  };
 
   return (
     <>

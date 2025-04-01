@@ -13,15 +13,23 @@ import Menu from "./Menu";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
   const searchRef = useRef(null);
+  const profileMenuRef = useRef(null);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     // Function to handle clicks outside search input
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setIsOpen(false);
+      }
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setOpenMenu(false);
       }
     };
 
@@ -30,6 +38,19 @@ const NavBar = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
+  // Function to handle user logout
+  const handleLogOut = () => {
+    // Confirm logout action with the user
+    const confirmLogout = confirm("Are you sure you want to Logout?");
+    if (!confirmLogout) return;
+
+    // Call the logout function
+    logout();
+
+    // Redirect user to the login page
+    navigate("/login");
+  };
 
   return (
     <nav className="relative">
@@ -94,10 +115,38 @@ const NavBar = () => {
             <BsCircleFill className="absolute top-3.5 right-0.5 text-[10px] text-warning" />
           </div>
           <div
-            className="transition-all p-1 text-white dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary cursor-pointer"
-            onClick={() => navigate("/profile")}
+            ref={profileMenuRef}
+            className="relative group transition-all p-1 text-white dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary cursor-pointer"
+            onClick={() => setOpenMenu(!openMenu)}
           >
             <BsPerson />
+            <div
+              id="modal"
+              className={`scale-0 absolute top-8 left-1/2 transform -translate-x-1/2 min-w-20 p-3 mx-auto bg-white text-secondary text-base text-center rounded-md space-y-1 shadow-md shadow-gray-400 cursor-default 
+                ${openMenu ? "scale-100" : "scale-0"} 
+                group-hover:scale-100 group-hover:dark:bg-darkBg dark:shadow-gray-800 dark:border border-gray-700 
+              `}
+            >
+              <p
+                onClick={() => navigate("/profile")}
+                className="cursor-pointer hover:text-blue-900 hover:underline"
+              >
+                Profile
+              </p>
+              {user && (
+                <>
+                  <p className="cursor-pointer hover:text-blue-900 hover:underline">
+                    Settings
+                  </p>
+                  <p
+                    onClick={handleLogOut}
+                    className="cursor-pointer hover:text-blue-900 hover:underline"
+                  >
+                    Logout
+                  </p>
+                </>
+              )}
+            </div>
           </div>
           <div className="flex items-center">
             <ThemeToggle />

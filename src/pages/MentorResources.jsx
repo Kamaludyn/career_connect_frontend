@@ -7,7 +7,7 @@ const MentorResources = () => {
   const [myResources, setMyResources] = useState([]);
   const [selectedResource, setSelectedResource] = useState([]);
   const [openResource, setOpenResource] = useState(false);
-  const [openForm, setOpenForm] = useState(true);
+  const [isOpenForm, setIsOpenForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -19,10 +19,10 @@ const MentorResources = () => {
         // Make an HTTP GET request to fetch the user's resources
         const response = await api.get("/resources/my-resources");
 
-          // Update state with the retrieved resources
+        // Update state with the retrieved resources
         setMyResources(response.data);
       } catch (error) {
-         // Handle specific error cases 
+        // Handle specific error cases
         if (error?.response?.status === 401) {
           toast.error(error?.response?.data?.message);
         } else if (error?.response?.status === 403) {
@@ -42,10 +42,25 @@ const MentorResources = () => {
     <>
       {!openResource ? (
         <div className="p-4">
-          <h2 className="text-xl font-semibold mb-4 dark:text-darkText">
-            Resources
-          </h2>
-          <AddResourcesForm openForm={openForm} setOpenForm={setOpenForm} />
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl p-2 font-semibold dark:text-darkText">
+              Resources
+            </h2>
+            <button
+              className={`${
+                isOpenForm
+                  ? "hidden"
+                  : "bg-secondary p-2 px-3 text-center rounded-2xl text-darkText hover:bg-primary"
+              }`}
+              onClick={() => setIsOpenForm(true)}
+            >
+              Upload New Resource
+            </button>
+          </div>
+          <AddResourcesForm
+            isOpenForm={isOpenForm}
+            setIsOpenForm={setIsOpenForm}
+          />
           {loading ? (
             <>
               {[...Array(3)].map((_, index) => (
@@ -59,6 +74,16 @@ const MentorResources = () => {
                 </li>
               ))}
             </>
+          ) : myResources?.length === 0 ? (
+            <div className="flex flex-col md:flex-row items-center gap-3 p-4 mt-2 md:p-4 dark:text-white bg-lightBg dark:bg-gray-800 rounded-2xl">
+              <p>You have not uploaded any material</p>
+              <button
+                className="text-secondary hover:text-primary hover:underline"
+                onClick={() => setIsOpenForm(true)}
+              >
+                Upload Here!
+              </button>
+            </div>
           ) : (
             <ul className="mt-2 p-2 pb-4 md:p-4 space-y-3 bg-lightBg dark:bg-gray-800 rounded-2xl dark:text-darkText">
               {myResources?.map((resource) => (
@@ -81,8 +106,8 @@ const MentorResources = () => {
                     <p className="text-sm font-semibold text-success">
                       Price: {!resource.price ? "Free" : resource.price}
                     </p>
+                    <hr className="mt-2"></hr>
                   </li>
-                  <hr></hr>
                 </>
               ))}
             </ul>

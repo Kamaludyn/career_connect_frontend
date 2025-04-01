@@ -1,10 +1,8 @@
-import { useState } from "react";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
+import { BsX } from "react-icons/bs";
 
-const AddResourcesForm = () => {
-  const [openForm, setOpenForm] = useState(true);
-
+const AddResourcesForm = ({ isOpenForm, setIsOpenForm }) => {
   // Array of predefined categories for the resource selection dropdown
   const categories = [
     "Interview Preparation",
@@ -48,76 +46,70 @@ const AddResourcesForm = () => {
     } catch (error) {
       toast.error(error.response?.data.message);
     } finally {
-      setOpenForm(false);
+      setIsOpenForm(false);
     }
   };
 
   return (
-    <section>
-      <div className="relative mb-4 p-4 bg-white dark:bg-darkBg rounded-2xl">
-        <h3
-          className={`${
-            !openForm
-              ? "text-lg font-medium mb-2"
-              : "bg-secondary p-2 text-center rounded-2xl text-darkText cursor-pointer"
-          } dark:text-darkText`}
-          onClick={() => (setOpenForm(false), console.log("form"))}
-        >
-          Add New Resource
-        </h3>
-        <button
-          className={`${
-            openForm ? "hidden" : "block absolute top-3 right-3 text-rose-500"
-          }`}
-          onClick={() => setOpenForm(true)}
-        >
-          close
-        </button>
-        <form
-          onSubmit={handleSubmit}
-          className={`${!openForm ? "h-full" : "hidden"}`}
-        >
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            className="border p-2 mb-2 w-full"
-          />
-          <textarea
-            name="description"
-            placeholder="Description"
-            className="border p-2 mb-2 w-full"
-            maxLength={500}
-          />
-          <textarea
-            name="body"
-            placeholder="Body"
-            className="border p-2 mb-2 w-full"
-          />
-          <input
-            type="text"
-            name="price"
-            placeholder="Price (optional)"
-            className="border p-2 mb-2 w-full"
-          />
-          <select name="category" className="border p-2 mb-2 w-full" required>
-            <option value="" disabled>
-              Select Category
+    <section
+      className={`${
+        isOpenForm
+          ? "fixed inset-0 -top-20 md:top-[5%] bg-[#00000077] flex flex-col justify-center items-center h-screen w-screen"
+          : "hidden"
+      }`}
+    >
+      <form
+        onSubmit={handleSubmit}
+        className={`${
+          isOpenForm
+            ? "w-11/12 md:w-1/2 p-4 relative pt-12 bg-white dark:bg-darkBg rounded-2xl"
+            : "hidden"
+        }`}
+      >
+        <BsX
+          onClick={() => setIsOpenForm(false)}
+          className="block absolute top-2 right-2 text-rose-500 text-3xl cursor-pointer"
+        />
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          className="border p-2 mb-2 w-full"
+        />
+        <textarea
+          name="description"
+          placeholder="Description"
+          className="border p-2 mb-2 w-full"
+          maxLength={500}
+        />
+        <textarea
+          name="body"
+          placeholder="Body"
+          className="border p-2 mb-2 w-full"
+        />
+        <input
+          type="text"
+          name="price"
+          placeholder="Price (optional)"
+          className="border p-2 mb-2 w-full"
+        />
+        <select name="category" className="border p-2 mb-2 w-full" required>
+          <option value="" disabled>
+            Select Category
+          </option>
+          {categories.map((category, index) => (
+            <option key={index} value={category}>
+              {category}
             </option>
-            {categories.map((category, index) => (
-              <option key={index} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            className="px-3 py-2 bg-blue-500 text-white rounded-md"
-          >
-            Add Resource
-          </button>
-        </form>
-      </div>
+          ))}
+        </select>
+        <button
+          type="submit"
+          className="px-3 py-2 bg-blue-500 text-white rounded-md"
+        >
+          Add Resource
+        </button>
+      </form>
     </section>
   );
 };
