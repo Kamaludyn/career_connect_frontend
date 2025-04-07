@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -8,30 +9,34 @@ const experienceLevels = ["Entry", "Intermediate", "Mid-level", "Senior"];
 const currencies = ["NGN", "USD", "EUR", "GBP"];
 const locations = ["On-Campus", "Off-Campus", "Remote"];
 
-export default function JobForm({ selectedJob }) {
+export default function JobForm() {
   const [loading, setLoading] = useState(false);
   const [jobData, setJobData] = useState({
     title: "",
     company: "",
     description: "",
-    location: "Remote",
+    location: "",
     locationDetails: "",
     type: "",
     experienceLevel: "",
     minSalary: "",
     maxSalary: "",
-    currency: "NGN",
-    applicationMethod: "careerconnect",
+    currency: "",
+    applicationMethod: "",
     applicationLink: "",
   });
-  
+
+  const location = useLocation();
+
   // Reference for the form to allow resetting after submission
   const formRef = useRef(null);
 
-  // useEffect to check if a job is selected on mount
+  // useEffect to check if a job is selected for update on mount
   useEffect(() => {
-     // If a job is selected, update the jobData state with the selected job details
-    if (selectedJob) setJobData(selectedJob);
+    // If a job is selected, update the jobData state with the selected job details
+    if (location?.state) {
+      setJobData(location?.state?.job);
+    }
 
     // Resets jobData when the component unmounts
     return () => {
@@ -41,7 +46,6 @@ export default function JobForm({ selectedJob }) {
 
   // Function to handle input changes in the form fields
   const handleInputChange = (e) => {
-
     // Extract name and value from the input field
     const { name, value } = e.target;
 
@@ -58,36 +62,38 @@ export default function JobForm({ selectedJob }) {
     setLoading(true);
 
     try {
-       // If a job is selected, send a PUT request to update the job details
-      if (selectedJob) {
-        const response = await api.put(`/jobs/${selectedJob?._id}`, jobData);
+      // If a job is selected, send a PUT request to update the job details
+      if (location?.state?.job) {
+        const response = await api.put(`/jobs/${jobData?._id}`, jobData);
 
-         // Show success notification for job update
+        // Show success notification for job update
         toast.success("Job Updated Successfully");
 
-          // Reset the form after successful submission
+        // Reset the form after successful submission
         formRef.current.reset();
       } else {
-         // If no job is selected, send a POST request to add a new job
+        // If no job is selected, send a POST request to add a new job
         const response = await api.post("/jobs", jobData);
 
-         // Show success notification for job addition
-         toast.success("Job Added Successfully");
+        // Show success notification for job addition
+        toast.success("Job Added Successfully");
 
-         // Reset the form after successful submission
-         formRef.current.reset();
+        // Reset the form after successful submission
+        formRef.current.reset();
       }
     } catch (error) {
-       // Handle specific error responses based on status codes
-      if (error.response?.status === 401) {
-         // Unauthorized error
+      // Handle specific error responses based on status codes
+      if (error?.code === "ERR_NETWORK") {
+        toast.error("Network Error");
+      } else if (error.response?.status === 401) {
+        // Unauthorized error
         toast.error(error.response.data.message);
       } else if (error.response?.status === 400) {
         // Bad request error
         toast.error(error.response.data.message);
       } else {
-         // Catch-all for any other errors
-        toast.error("An Error occurred");
+        // Catch-all for any other errors
+        toast.error("Job Post Error");
       }
     } finally {
       setLoading(false);
@@ -137,7 +143,9 @@ export default function JobForm({ selectedJob }) {
         className="dark:text-lightText p-2 border border-gray-300 rounded"
         required
       >
-        <option value="">Select Location</option>
+        <option value="" disabled>
+          Select Location
+        </option>
         {locations.map((loc) => (
           <option key={loc} value={loc}>
             {loc}
@@ -165,7 +173,9 @@ export default function JobForm({ selectedJob }) {
         onChange={handleInputChange}
         required
       >
-        <option value="">Select Job Type</option>
+        <option value="" disabled>
+          Select Job Type
+        </option>
         {jobTypes.map((type) => (
           <option key={type} value={type}>
             {type}
@@ -181,7 +191,9 @@ export default function JobForm({ selectedJob }) {
         onChange={handleInputChange}
         required
       >
-        <option value="">Select Experience Level</option>
+        <option value="" disabled>
+          Select Experience Level
+        </option>
         {experienceLevels.map((level) => (
           <option key={level} value={level}>
             {level}
@@ -216,6 +228,9 @@ export default function JobForm({ selectedJob }) {
           onChange={handleInputChange}
           required
         >
+          <option value="" disabled>
+            Select Currency
+          </option>
           {currencies.map((cur) => (
             <option key={cur} value={cur}>
               {cur}
@@ -228,9 +243,13 @@ export default function JobForm({ selectedJob }) {
       <select
         name="applicationMethod"
         onChange={handleInputChange}
+        value={jobData?.applicationMethod}
         className="dark:text-lightText p-2 border border-gray-300 rounded"
         required
       >
+        <option value="" disabled>
+          Select Method Of Application
+        </option>
         <option value="careerconnect">Apply on CareerConnect</option>
         <option value="External-Link">External Link</option>
         <option value="Email">Email</option>
@@ -257,7 +276,7 @@ export default function JobForm({ selectedJob }) {
       >
         {loading ? (
           <ClipLoader color="#ffffff" size={18} className="m-[-3px]" />
-        ) : selectedJob ? (
+        ) : location.state?.job ? (
           "Update Job"
         ) : (
           "Post Job"

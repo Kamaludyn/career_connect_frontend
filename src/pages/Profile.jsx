@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const Profile = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileInfo, setProfileInfo] = useState({});
+  const [appliedJobs, setAppliedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const { token, logout } = useAuth();
   const navigate = useNavigate();
@@ -25,22 +26,34 @@ const Profile = () => {
       try {
         // A GET request to fetch the authenticated user's profile
         const response = await api.get("/auth/profile");
-
         // Update profile state with fetched data
         setProfileInfo(response.data);
       } catch (error) {
         // Handle specific error scenarios
-        if (error?.response?.code === "ERR_NETWORK") {
+        if (error?.code === "ERR_NETWORK") {
           toast.error("Network connection lost");
         } else if (error?.response?.status === 401) {
           toast.error(error?.response?.data.message);
           navigate("/login");
         }
-        console.log("error response", error.response);
       } finally {
         setLoading(false);
       }
     };
+
+    const fetchAppliedJobs = async () => {
+      try {
+        const response = await api.get("/applications/applied");
+        const job = response.data.applications.map(
+          (application) => application.job
+        );
+        setAppliedJobs(job);
+      } catch (error) {
+        console.error("Error Fetching Jobs Applied");
+      }
+    };
+
+    fetchAppliedJobs();
 
     fetchProfile();
   }, [token]);
@@ -226,6 +239,46 @@ const Profile = () => {
                   </div>
                 </>
               )}
+
+              {appliedJobs?.length !== 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h3 className="text-lg font-semibold">Jobs applied</h3>
+                  <div className="flex flex-col md:flex-row gap-2">
+                    {appliedJobs?.map((job) => (
+                      <div
+                        key={job._id}
+                        className="p-4 mt-2 border border-gray-200 dark:border-gray-600 shadow-md rounded-md"
+                      >
+                        <p>
+                          <span className="text-gray-400 font-medium">
+                            Job Title:
+                          </span>{" "}
+                          {job.title}
+                        </p>
+                        <p>
+                          <span className="text-gray-400 font-medium">
+                            Company:
+                          </span>{" "}
+                          {job.company}
+                        </p>
+                        <p>
+                          <span className="text-gray-400 font-medium">
+                            Job Location:
+                          </span>{" "}
+                          {job.location}
+                        </p>
+                        <p>
+                          <span className="text-gray-400 font-medium">
+                            Job Type:
+                          </span>{" "}
+                          {job.type}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <button
                 onClick={handleLogOut}
                 className="mt-4 px-4 py-2 bg-secondary hover:bg-primary text-white rounded-lg shadow"

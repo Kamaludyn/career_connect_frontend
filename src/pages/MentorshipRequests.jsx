@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
 
 const MentorshipRequests = () => {
+  const location = useLocation();
+
   const [requests, setRequests] = useState([]);
+  const [highlightId, setHighlightId] = useState(
+    location.state?.highlightId || null
+  );
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -27,6 +32,15 @@ const MentorshipRequests = () => {
     };
     fetchRequest();
   }, []);
+
+  useEffect(() => {
+    if (highlightId) {
+      const timer = setTimeout(() => {
+        setHighlightId(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightId]);
 
   // Function to accept a mentorship request
   const acceptRequest = async (requestId) => {
@@ -124,14 +138,18 @@ const MentorshipRequests = () => {
         </ul>
       ) : requests?.length === 0 ? (
         <p className="p-4 mt-2 md:p-4 dark:text-white bg-lightBg dark:bg-gray-800 rounded-2xl">
-          No request availabnle yet
+          No request available yet
         </p>
       ) : (
         <ul className="mt-2 p-2 pb-4 md:p-4 space-y-3 bg-lightBg dark:bg-gray-800 rounded-2xl">
           {requests?.map((req) => (
             <li
               key={req._id}
-              className="flex flex-col p-2 pb-0 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md"
+              className={`${
+                req.mentee._id === highlightId
+                  ? "bg-blue-300 animate-pulse"
+                  : "bg-transparent"
+              } flex flex-col p-2 pb-0 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md`}
             >
               <p
                 className="font-medium hover:underline"
@@ -159,7 +177,6 @@ const MentorshipRequests = () => {
                 <div className="mt-2 flex space-x-2">
                   <button
                     onClick={() => acceptRequest(req._id)}
-                    // onClick={() => handleAction(req._id, "accepted")}
                     className="px-3 py-1 bg-green-500 text-white rounded-md"
                   >
                     Accept

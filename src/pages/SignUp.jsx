@@ -13,17 +13,17 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-     // Accessing the form element to retrieve input values
+
+    // Accessing the form element to retrieve input values
     const signUpForm = e.target;
 
-     // Check if passwords match before proceeding
+    // Check if passwords match before proceeding
     if (signUpForm.password.value !== signUpForm.confirmPassword.value) {
       toast.error("Passwords do not match!");
       return;
     }
 
-     // Base object data containing common fields for all account types
+    // Base object data containing common fields for all account types
     let filteredData = {
       surname: signUpForm.surname.value,
       othername: signUpForm.othername.value,
@@ -74,7 +74,7 @@ const SignUp = () => {
       // Clear form fields
       signUpForm.reset();
     } catch (error) {
-       // Handle errors
+      // Handle errors
       if (error.message === "Network Error") {
         // Network error (e.g., no internet connection)
         toast.error("Please check your network connection");
@@ -184,7 +184,7 @@ const SignUp = () => {
               <input
                 type="text"
                 name="experience"
-                placeholder="Years of Experience"
+                placeholder="Years of Experience (e.g. 3)"
                 className="w-full p-2 border rounded"
               />
             </div>

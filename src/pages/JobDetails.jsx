@@ -1,13 +1,39 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useData } from "../context/DataContext";
+import api from "../services/api";
 
 export default function JobDetails() {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const { job } = location.state;
+
+  const [jobDetails, setJobDetails] = useState({});
+
+  const { id } = useParams();
 
   const { applyForJob } = useData();
+
+  useEffect(() => {
+    // Check if there is any state passed through the navigation (location.state).
+    if (!location.state) {
+      // If no state is passed, fetch the job details manually using the job's ID from the URL.
+      const fetchJob = async () => {
+        try {
+          const response = await api.get(`/jobs/${id}`);
+          setJobDetails(response.data);
+        } catch (error) {
+          console.error("Error fetching job details");
+        }
+      };
+
+      fetchJob();
+    } else {
+      // If state is passed from navigation, use that to avoid refetching from the server.
+      const { job } = location.state;
+      setJobDetails(job);
+    }
+  }, []);
 
   const handleClick = () => {
     // Checks with the user before applying for job
@@ -17,7 +43,7 @@ export default function JobDetails() {
 
     if (!confirmApplication) return;
 
-    applyForJob(job._id);
+    applyForJob(jobDetails?._id);
   };
 
   return (
@@ -32,50 +58,50 @@ export default function JobDetails() {
       </div>
       <h1 className="text-2xl font-bold mb-4 underline">Job Details</h1>
       <h2 className="text-2xl dark:text-white text-gray-800 font-semibold mb-2">
-        {job?.title}
+        {jobDetails?.title}
       </h2>
-      <p className="text-lg text-gray-600">{job?.company}</p>
-      <p className="mt-2">{job?.description}</p>
+      <p className="text-lg text-gray-600">{jobDetails?.company}</p>
+      <p className="mt-2">{jobDetails?.description}</p>
 
       <div className="mt-4">
         <p>
-          <strong>Location:</strong> {job?.location}
+          <strong>Location:</strong> {jobDetails?.location}
         </p>
-        {job?.location !== "Remote" && (
+        {jobDetails?.location !== "Remote" && (
           <p>
-            <strong>Address:</strong> {job?.locationDetails}
+            <strong>Address:</strong> {jobDetails?.locationDetails}
           </p>
         )}
         <p>
-          <strong>Type:</strong> {job?.type}
+          <strong>Type:</strong> {jobDetails?.type}
         </p>
         <p>
-          <strong>Experience Level:</strong> {job?.experienceLevel}
+          <strong>Experience Level:</strong> {jobDetails?.experienceLevel}
         </p>
       </div>
 
       <div className="mt-4">
         <p>
-          <strong>Salary:</strong> {job?.currency} {job?.minSalary} -{" "}
-          {job?.maxSalary}
+          <strong>Salary:</strong> {jobDetails?.currency}{" "}
+          {jobDetails?.minSalary} - {jobDetails?.maxSalary}
         </p>
       </div>
 
       <div className="mt-4">
         <p>
-          <strong>Application Method:</strong> {job?.applicationMethod}
+          <strong>Application Method:</strong> {jobDetails?.applicationMethod}
         </p>
-        {job?.applicationMethod !== "careerconnect" ? (
-          job?.applicationLink && (
+        {jobDetails?.applicationMethod !== "careerconnect" ? (
+          jobDetails?.applicationLink && (
             <p>
               <strong>Apply Here:</strong>{" "}
               <a
-                href={job?.applicationLink}
+                href={jobDetails?.applicationLink}
                 className="text-blue-600 underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {job?.applicationLink}
+                {jobDetails?.applicationLink}
               </a>
             </p>
           )

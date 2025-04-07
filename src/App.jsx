@@ -13,9 +13,15 @@ import SignUp from "./pages/SignUp";
 import JobDetails from "./pages/JobDetails";
 import StudentProfile from "./pages/StudentProfile";
 import MentorProfile from "./pages/MentorProfile";
-import EmployerDashboard from "./pages/EmployerDashboard";
 import MentorsDashboard from "./pages/MentorsDashboard";
+import MenteesList from "./pages/MenteesList";
+import MentorshipRequests from "./pages/MentorshipRequests";
+import MentorResources from "./pages/MentorResources";
 import ResourceDetails from "./pages/ResourceDetails";
+import EmployerDashboard from "./pages/EmployerDashboard";
+import EmployerPostedJobs from "./pages/EmployerPostedJobs";
+import Applicants from "./pages/Applicants";
+import PostJobForm from "./pages/PostJobForm";
 import AdminLayout from "./admin/AdminLayout";
 import Overview from "./admin/pages/Overview";
 import StudentsMgt from "./admin/pages/StudentsMgt";
@@ -28,6 +34,7 @@ import Login from "./pages/Login";
 import PrivateRoute from "./components/PrivateRoute";
 import NotFound from "./pages/NotFound";
 import { Toaster } from "react-hot-toast";
+import EmployerJobDetails from "./pages/EmployerJobDetails";
 
 function App() {
   const router = createBrowserRouter([
@@ -66,6 +73,10 @@ function App() {
           element: <Jobs />,
         },
         {
+          path: "/job-details/:id",
+          element: <JobDetails />,
+        },
+        {
           path: "/resources",
           element: <Resources />,
         },
@@ -96,21 +107,48 @@ function App() {
         {
           path: "/mentor-dashboard",
           element: <MentorsDashboard />,
-        },
-        {
-          path: "/job-details/:id",
-          element: <JobDetails />,
+          children: [
+            {
+              path: "",
+              element: <MenteesList />,
+            },
+            {
+              path: "requests",
+              element: <MentorshipRequests />,
+            },
+            {
+              path: "resources",
+              element: <MentorResources />,
+            },
+          ],
         },
         {
           path: "/employer-dashboard",
           element: <EmployerDashboard />,
+          children: [
+            {
+              path: "",
+              element: <EmployerPostedJobs />,
+            },
+            {
+              path: "applicants",
+              element: <Applicants />,
+            },
+            {
+              path: "job-form",
+              element: <PostJobForm />,
+            },
+            {
+              path: "job-details/:id",
+              element: <EmployerJobDetails />,
+            },
+          ],
         },
       ],
     },
     {
       path: "/dashboard",
       element: <AdminLayout />,
-
       children: [
         {
           path: "",

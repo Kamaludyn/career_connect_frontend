@@ -1,15 +1,89 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { handleNotificationNavigation } from "../utils/NotificationRouter";
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: "mentorship", message: "John Doe accepted your mentorship request.", time: "2 hours ago", read: false },
-    { id: 2, type: "job_alert", message: "New job matching your profile: Frontend Developer at Google.", time: "5 hours ago", read: false },
-    { id: 3, type: "event", message: "Reminder: 'Tech Networking Event' starts in 1 hour!", time: "1 day ago", read: true },
-    { id: 4, type: "system", message: "Password changed successfully.", time: "2 days ago", read: true },
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const markAllAsRead = () => {
-    setNotifications(notifications.map((notification) => ({ ...notification, read: true })));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setLoading(true);
+
+      try {
+        const response = await api.get("/notifications");
+        // Current timestamp in milliseconds which allows for time manipulation and comparison.
+        const currentTime = new Date();
+
+        const notificationTime = response.data.map((res) => {
+          // Convert createdAt to a Date object which also allows for time manipulation and comparison.
+          const createdTime = new Date(res.createdAt);
+
+          // Get time difference (the result is in milliseconds)
+          const timeDifference = currentTime - createdTime;
+
+          // Divide the timeDifference(milliseconds) by 1000 to convert to seconds
+          const seconds = Math.floor(timeDifference / 1000);
+
+          // Divide the seconds by 60 to get minutes
+          const minutes = Math.floor(seconds / 60);
+
+          // Divide the minutes by 60 to get hours
+          const hours = Math.floor(minutes / 60);
+
+          // Divide the hours by 24 to get hours
+          const days = Math.floor(hours / 24);
+
+          let timeCreated;
+
+          // Determine the timeCreated based on the time difference
+          if (seconds < 60) {
+            timeCreated = `${seconds} sec ago`;
+          } else if (minutes < 60) {
+            timeCreated = `${minutes} min ago`;
+          } else if (hours < 24) {
+            timeCreated = `${hours} hours ago`;
+          } else {
+            timeCreated = `${days} days ago`;
+          }
+
+          // Add timeCreated to each notification
+          return { ...res, timeCreated };
+        });
+        console.log("notificationTime", notificationTime);
+        setNotifications(notificationTime);
+      } catch (error) {
+        console.error("Error getting notifications:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  // Function to handle read all notifcation
+  const markAllAsRead = async () => {
+    try {
+      const response = await api.put("/notifications/read-all");
+      toast.success(response.data.message);
+    } catch (error) {
+      console.error("Notifications Error");
+    }
+  };
+
+  // Function to handle Read Notification and navigate based on notification type
+  const handleNotificationClick = async (notification) => {
+    try {
+      const response = await api.put(`/notifications/${notification._id}/read`);
+    // Call the function that handles the navigation
+      handleNotificationNavigation(notification, navigate);
+    } catch (error) {
+      toast.error("Reading Notificationn Error");
+    }
   };
 
   return (
@@ -17,28 +91,47 @@ const Notifications = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Notifications</h1>
-        <button onClick={markAllAsRead} className="text-blue-600">Mark All as Read</button>
+        <button onClick={markAllAsRead} className="text-blue-600">
+          Mark All as Read
+        </button>
       </div>
-
-      {/* Notifications List */}
-      <div className="space-y-3">
-        {notifications.map((notification) => (
-          <div 
-            key={notification.id} 
-            className={`p-4 bg-white dark:bg-gray-800 rounded-lg shadow flex items-start gap-3 ${notification.read ? 'opacity-70' : 'font-semibold'}`}
-          >
-            <span className="text-xl">
-              {notification.type === "mentorship" ? "🔵" : 
-               notification.type === "job_alert" ? "🟢" : 
-               notification.type === "event" ? "🟠" : "🔴"}
-            </span>
-            <div>
-              <p>{notification.message}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{notification.time}</p>
+      {loading ? (
+        <div className="space-y-3">
+          {[...Array(4)].map((_, index) => (
+            <div
+              key={index}
+              className="p-4 bg-gray-200 dark:bg-gray-700 rounded-lg shadow animate-pulse space-y-2"
+            >
+              <div className="w-full h-6 bg-gray-400 rounded"></div>
+              <div className="w-1/6 h-4 bg-gray-400 rounded"></div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {notifications?.map((notification) => (
+            <div
+              key={notification._id}
+              className={`p-4 bg-white dark:bg-gray-800 rounded-lg shadow flex items-start gap-3 ${
+                notification.isRead ? "opacity-70" : "font-semibold"
+              }`}
+              onClick={() => handleNotificationClick(notification)}
+            >
+              <div>
+                <p
+                  // onClick={handleNotificationClick}
+                  className="hover:underline cursor-pointer"
+                >
+                  {notification.message}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {notification.timeCreated}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

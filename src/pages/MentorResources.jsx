@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import AddResourcesForm from "../components/AddResourcesForm";
 import MyResource from "../components/MyResource";
 import api from "../services/api";
+import toast from "react-hot-toast";
 
 const MentorResources = () => {
   const [myResources, setMyResources] = useState([]);
