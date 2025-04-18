@@ -30,7 +30,7 @@ const Profile = () => {
         setProfileInfo(response.data);
       } catch (error) {
         // Handle specific error scenarios
-        if (error?.code === "ERR_NETWORK") {
+        if (!error.response) {
           toast.error("Network connection lost");
         } else if (error?.response?.status === 401) {
           toast.error(error?.response?.data.message);

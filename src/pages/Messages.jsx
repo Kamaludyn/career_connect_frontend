@@ -1,120 +1,110 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { NavLink, Outlet } from "react-router-dom";
+import { useMessage } from "../context/MessageContext";
+import { useAuth } from "../context/AuthContext";
+import { BsCircleFill } from "react-icons/bs";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const Messages = () => {
-  const [selectedChat, setSelectedChat] = useState(null);
-  const conversations = [
-    {
-      id: 1,
-      name: "Alice Johnson",
-      lastMessage: "Hey, how are you?",
-      unread: 2,
-    },
-    {
-      id: 2,
-      name: "Michael Smith",
-      lastMessage: "Let's schedule a call.",
-      unread: 0,
-    },
-    {
-      id: 3,
-      name: "Emma Brown",
-      lastMessage: "Thanks for the help!",
-      unread: 1,
-    },
-  ];
+  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    conversations,
+    setConversations,
+    selectedChat,
+    setSelectedChat,
+    loading,
+  } = useMessage();
 
-  const messages = [
-    { sender: "Alice Johnson", text: "Hey, how are you?" },
-    { sender: "You", text: "I'm doing well, thanks!" },
-  ];
+  const { user } = useAuth();
+
+  // Mark conversation as read
+  const handleClick = (convoId) => {
+    setConversations((prev) =>
+      prev.map((convo) =>
+        convo.participants.some((p) => p._id === convoId)
+          ? { ...convo, hasUnread: false }
+          : convo
+      )
+    );
+    setSelectedChat(true);
+  };
+
+  // Filter conversations based on search query
+  const filteredConversation = conversations.filter((convo) => {
+    return (
+      convo.participants.find((p) => p._id !== user?._id) &&
+      (convo.participants
+        .find((p) => p._id !== user?._id)
+        .othername.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+        convo.participants
+          .find((p) => p._id !== user?._id)
+          .surname.toLowerCase()
+          .includes(searchQuery.toLowerCase()))
+    );
+  });
 
   return (
-    <div className="w-full min-h-screen flex bg-gray-100 dark:bg-gray-900 text-black dark:text-white rounded-xl">
-      {/* Sidebar - Show only on larger screens or when a chat is not selected on small screens */}
+    <div className="w-full flex bg-gray-100 dark:bg-gray-900 text-black dark:text-white md:-mb-20 rounded-xl">
       <div
-        className={`w-full sm:w-1/3 md:w-1/4 bg-white dark:bg-gray-800 p-4 border-r dark:border-gray-700  rounded-xl sm:rounded-e-none
-        ${selectedChat ? "hidden sm:block" : "block"}`}
+        className={`w-full md:w-[35%] lg:w-[25%] bg-white dark:bg-gray-800 p-4 border-r dark:border-gray-700 rounded-xl md:rounded-e-none
+        ${selectedChat ? "hidden md:block" : "block"}`}
       >
         <h2 className="text-xl font-bold mb-4">Messages</h2>
         <input
           type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search..."
           className="w-full p-2 mb-4 rounded-lg border dark:border-gray-600 bg-gray-200 dark:bg-gray-700"
         />
-        <div>
-          {conversations.map((conv) => (
-            <div
-              key={conv.id}
-              className="p-3 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 flex justify-between"
-              onClick={() => setSelectedChat(conv.id)}
-            >
-              <div>
-                <h3 className="font-semibold">{conv.name}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {conv.lastMessage}
-                </p>
-              </div>
-              {conv.unread > 0 && (
-                <span className="bg-red-500 self-start px-2 py-1 text-white text-xs  rounded-full">
-                  {conv.unread}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Chat Window - Show only on larger screens or when a chat is selected on small screens */}
-      <div
-        className={`w-full sm:w-2/3 md:w-3/4 p-4 ${
-          selectedChat ? "block" : "hidden sm:block"
-        }`}
-      >
-        {selectedChat ? (
-          <div>
-            <div className="flex items-center mb-4">
-              <button
-                className="sm:hidden mr-2 p-2 bg-gray-300 dark:bg-gray-700 rounded-lg"
-                onClick={() => setSelectedChat(null)}
-              >
-                Back
-              </button>
-              <h2 className="text-xl font-bold">
-                Chat with{" "}
-                {conversations.find((c) => c.id === selectedChat)?.name}
-              </h2>
-            </div>
-            <div className="h-96 bg-gray-200 dark:bg-gray-700 p-4 rounded-lg overflow-y-auto">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`mb-2 p-2 rounded-lg ${
-                    msg.sender === "You"
-                      ? "bg-blue-500 w-4/5 text-white self-end ml-auto"
-                      : "bg-gray-300 w-4/5 dark:bg-gray-600"
-                  }`}
-                >
-                  <p>{msg.text}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 flex justify-between sm:gap-2 mx-auto text-base">
-              <input
-                type="text"
-                placeholder="Type a message..."
-                className="min-w-[74%] md:flex-grow p-2 rounded-lg border dark:border-gray-600 bg-gray-200 dark:bg-gray-700"
-              />
-              <button className="min-w-[24%] p-2 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg">
-                Send
-              </button>
-            </div>
+        {loading ? (
+          <div className="flex w-full justify-center h-[70vh] md:h-[60vh] overflow-x-auto">
+            <ClipLoader color="#4f46e5" size={20} />
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400 text-center">
-            Select a conversation to start chatting.
-          </p>
+          <div className="h-[70vh] md:h-[60vh] overflow-x-auto">
+            {filteredConversation?.map((convo) => {
+              let receiver = convo.participants.find(
+                (p) => p._id !== user?._id
+              );
+              let lastMessage = convo.lastMessage;
+
+              return (
+                <NavLink
+                  key={receiver._id}
+                  to={`/messages/${receiver._id}`}
+                  end
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-gray-200 dark:bg-gray-700 flex justify-between p-3 mb-1.5 rounded-lg cursor-pointer overflow-x-auto hover:bg-gray-200 dark:hover:bg-gray-700"
+                      : "bg-transparent flex justify-between p-3 mb-1.5 rounded-lg cursor-pointer overflow-x-auto hover:bg-gray-200 dark:hover:bg-gray-700"
+                  }
+                  onClick={() => handleClick(receiver._id)}
+                >
+                  <div>
+                    <h3 className="font-semibold">
+                      {receiver.othername} {receiver.surname}
+                    </h3>
+                    <p
+                      className={`${
+                        convo.hasUnread ? "text-secondary" : "text-gray-500"
+                      } text-sm`}
+                    >
+                      {lastMessage.text}
+                    </p>
+                  </div>
+                  {!window.location.pathname.endsWith(receiver._id) &&
+                    convo.hasUnread && (
+                      <BsCircleFill className="text-error self-start text-xl px-1 py-.5" />
+                    )}
+                </NavLink>
+              );
+            })}
+          </div>
         )}
       </div>
+      <Outlet />
     </div>
   );
 };

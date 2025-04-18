@@ -34,7 +34,7 @@ const Login = () => {
     };
 
     try {
-       // Sends a POST request to the authentication endpoint with user credentials
+      // Sends a POST request to the authentication endpoint with user credentials
       const response = await api.post("/auth/login", userData);
 
       // Stores the authentication token and user data upon successful login
@@ -44,14 +44,14 @@ const Login = () => {
       navigate("/");
       toast.success("Login Successful");
     } catch (error) {
-       // Handles different error scenarios
+      // Handles different error scenarios
       if (error?.code === "ERR_NETWORK") {
         toast.error(error?.message);
       } else if (error?.response?.status === 400) {
         // If the server returns a 400 status (bad request), show the server's error message
         toast.error(error?.response?.data.message);
       } else {
-         // Fallback error message for any other login failures
+        // Fallback error message for any other login failures
         toast.error("Login Failed");
       }
     } finally {
@@ -96,7 +96,6 @@ const Login = () => {
 
           <button
             type="submit"
-            // className="w-full p-2 bg-secondary text-white rounded"
             className={`w-full bg-secondary hover:bg-opacity-90 text-white pt-3 pb-2 px-3 rounded transition ${
               loading ? "cursor-not-allowed" : ""
             }`}

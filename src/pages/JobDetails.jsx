@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useData } from "../context/DataContext";
 import api from "../services/api";
+import { BsChevronLeft } from "react-icons/bs";
 
 export default function JobDetails() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function JobDetails() {
 
   const { applyForJob } = useData();
 
+  // Effect to fetch selected job details
   useEffect(() => {
     // Check if there is any state passed through the navigation (location.state).
     if (!location.state) {
@@ -53,7 +55,7 @@ export default function JobDetails() {
           className="w-fit py-2 px-4 border rounded-lg hover:bg-transparent bg-gray-300 dark:text-black dark:hover:bg-gray-700 hover:text-primary cursor-pointer"
           onClick={() => navigate(-1)}
         >
-          Back
+          <BsChevronLeft />
         </p>
       </div>
       <h1 className="text-2xl font-bold mb-4 underline">Job Details</h1>

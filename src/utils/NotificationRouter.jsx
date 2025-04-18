@@ -1,14 +1,14 @@
 export const handleNotificationNavigation = (notification, navigate) => {
   if (notification.type === "mentorship_request") {
-    // If a its mentorship request, navigate the mentor to the mentor request page
+    // If its a mentorship request, navigate the mentor to the mentor request page
     navigate("/mentor-dashboard/requests", {
       state: { highlightId: `${notification.triggeredBy}` },
     });
   } else if (notification.type === "mentorship_accepted") {
-    // if the mentorship request is accepted, navigate to the mentor's profile
+    // if a mentorship request is accepted, navigate to the mentor's profile
     navigate(`/mentor-profile/${notification.triggeredBy}`);
   } else if (notification.type === "mentorship_rejected") {
-    // if the mentorship request is rejected, navigate to the mentor's profile
+    // if a mentorship request is rejected, navigate to the mentor's profile
     navigate("/mentorship");
   } else if (notification.type === "job_application") {
     // if its a job application notification, navigate to the job details page

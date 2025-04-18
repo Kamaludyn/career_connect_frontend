@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
+import { BsChevronLeft } from "react-icons/bs";
 
 const ProfileEdit = ({ isOpen, setIsOpen, profileInfo, setProfileInfo }) => {
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ const ProfileEdit = ({ isOpen, setIsOpen, profileInfo, setProfileInfo }) => {
           className="w-fit py-2 px-4 border rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary cursor-pointer"
           onClick={() => setIsOpen(false)}
         >
-          Back
+          <BsChevronLeft />
         </p>
       </div>
       <h2 className="text-2xl font-bold">Edit Profile</h2>

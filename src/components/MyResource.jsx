@@ -1,5 +1,5 @@
 import ReactMarkdown from "react-markdown";
-import { MdChevronLeft } from "react-icons/md";
+import { BsChevronLeft } from "react-icons/bs";
 
 const MyResource = ({ selectedResource, setOpenResource }) => {
   return (
@@ -8,8 +8,7 @@ const MyResource = ({ selectedResource, setOpenResource }) => {
         className="flex items-center my-4 text-center text-blue-600 hover:underline"
         onClick={() => setOpenResource(false)}
       >
-        <MdChevronLeft />
-        Back
+        <BsChevronLeft />
       </button>
       <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white">
         {selectedResource.title}

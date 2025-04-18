@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
+import { BsChevronLeft } from "react-icons/bs";
 
 export default function EmployerJobDetails() {
   const location = useLocation();
@@ -11,6 +12,7 @@ export default function EmployerJobDetails() {
 
   const { id } = useParams();
 
+  // Effect to fetch selected job details
   useEffect(() => {
     // Check if there is any state passed through the navigation (location.state).
     if (!location.state) {
@@ -42,6 +44,17 @@ export default function EmployerJobDetails() {
       const res = await api.put(`/applications/${applicationId}`, {
         status,
       });
+
+      // Update UI
+      setJobDetails((prev) => ({
+        ...prev,
+        applicants: prev.applicants.map((applicant) =>
+          applicant._id === applicationId
+            ? { ...applicant, status } 
+            : applicant
+        ),
+      }));
+
       toast.success(res.data.message);
     } catch (error) {
       toast.error("Job Application Review Error");
@@ -55,7 +68,7 @@ export default function EmployerJobDetails() {
           className="w-fit py-2 px-4 border rounded-lg hover:bg-transparent bg-gray-300 dark:hover:bg-gray-700 hover:text-primary cursor-pointer"
           onClick={() => navigate(-1)}
         >
-          Back
+          <BsChevronLeft />
         </p>
       </div>
       <h2 className="text-3xl font-bold mb-4">{jobDetails?.title}</h2>
@@ -117,11 +130,7 @@ export default function EmployerJobDetails() {
                 navigate(`/student-profile/${applicant.applicant._id}`)
               }
               className={`hover:underline cursor-pointer ${
-                applicant.status === "rejected"
-                  ? "text-error"
-                  : applicant.status === "accepted"
-                  ? "text-success"
-                  : "text-primary"
+                applicant.status === "rejected" ? "text-error" : "text-primary"
               }`}
             >
               {applicant.applicant.othername} {applicant.applicant.surname}
@@ -142,15 +151,28 @@ export default function EmployerJobDetails() {
                 </button>
               </div>
             ) : (
-              <p
-                className={`${
-                  applicant.status === "rejected"
-                    ? "text-error"
-                    : "text-success"
-                } text-error px-3 py-1 italic`}
-              >
-                {applicant.status}
-              </p>
+              <>
+                <p
+                  className={`${
+                    applicant.status === "rejected"
+                      ? "text-error"
+                      : "text-success"
+                  } text-error px-3 py-1 italic`}
+                >
+                  {applicant.status.charAt(0).toUpperCase() +
+                    applicant.status.slice(1).toLowerCase()}
+                </p>
+                {applicant.status === "accepted" && (
+                  <button
+                    className="italic px-3 py-1 bg-success border hover:border-success text-white hover:bg-white hover:text-success rounded"
+                    onClick={() =>
+                      navigate(`/messages/${applicant.applicant._id}`)
+                    }
+                  >
+                    Send Message
+                  </button>
+                )}
+              </>
             )}
           </div>
         ))}

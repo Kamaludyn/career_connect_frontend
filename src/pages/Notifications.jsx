@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { handleNotificationNavigation } from "../utils/NotificationRouter";
+import { toast } from "react-hot-toast"
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -53,10 +54,13 @@ const Notifications = () => {
           // Add timeCreated to each notification
           return { ...res, timeCreated };
         });
-        console.log("notificationTime", notificationTime);
         setNotifications(notificationTime);
       } catch (error) {
-        console.error("Error getting notifications:", error);
+        if(error?.code === "ERR_NETWORK"){
+          toast.error("Network Error")
+        }else{
+        console.error("Error getting notifications");
+        }
       } finally {
         setLoading(false);
       }
@@ -71,7 +75,11 @@ const Notifications = () => {
       const response = await api.put("/notifications/read-all");
       toast.success(response.data.message);
     } catch (error) {
-      console.error("Notifications Error");
+      if (error?.code === "ERR_NETWORK") {
+        toast.error("Network Connect Lost");
+      } else {
+        console.error("Notifications Error");
+      }
     }
   };
 
@@ -79,7 +87,7 @@ const Notifications = () => {
   const handleNotificationClick = async (notification) => {
     try {
       const response = await api.put(`/notifications/${notification._id}/read`);
-    // Call the function that handles the navigation
+      // Call the function that handles the navigation
       handleNotificationNavigation(notification, navigate);
     } catch (error) {
       toast.error("Reading Notificationn Error");
@@ -118,10 +126,7 @@ const Notifications = () => {
               onClick={() => handleNotificationClick(notification)}
             >
               <div>
-                <p
-                  // onClick={handleNotificationClick}
-                  className="hover:underline cursor-pointer"
-                >
+                <p className="hover:underline cursor-pointer active:bg-red">
                   {notification.message}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">

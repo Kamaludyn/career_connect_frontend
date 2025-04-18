@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BsPersonCircle } from "react-icons/bs";
 import api from "../services/api";
-import {toast} from "react-hot-toast"
+import { toast } from "react-hot-toast";
 
 const Students = () => {
   const [applicants, setApplicants] = useState([]);
@@ -93,7 +93,7 @@ const Students = () => {
                     <p className="text-sm text-gray-600">{applicant.skills}</p>
                   </div>
                   <button
-                    className="text-blue-500 md:mr-3 hover:underline"
+                    className="text-blue-500 hover:underline"
                     onClick={() =>
                       navigate(`/student-profile/${applicant._id}`, {
                         state: { user: applicant },
@@ -101,6 +101,12 @@ const Students = () => {
                     }
                   >
                     View Profile
+                  </button>
+                  <button
+                    className="text-blue-500 mx-3 hover:underline"
+                    onClick={() => navigate(`/messages/${applicant._id}`)}
+                  >
+                    Send Message
                   </button>
                 </div>
               </li>

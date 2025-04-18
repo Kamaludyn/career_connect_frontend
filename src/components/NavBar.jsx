@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import { useMessage } from "../context/MessageContext";
 import ThemeToggle from "./ThemeToggle";
 import {
   BsPerson,
@@ -18,6 +19,7 @@ const NavBar = () => {
   const profileMenuRef = useRef(null);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const unreadMessages = useMessage()?.unreadMessages || false;
 
   useEffect(() => {
     // Function to handle clicks outside search input
@@ -53,7 +55,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="relative">
+    <nav className="relative mb-200">
       <div className="fixed top-0 left-0 bg-primary w-full flex justify-between items-center gap-2 px-4 py-3 md:p-4 md:py-2 md:pl-10 dark:bg-darkBg dark:text-darkText transition-all border-b border-gray-200 z-50">
         <div
           className="font-black bg-white p-1 text-lg text-primary rounded-full cursor-pointer"
@@ -105,7 +107,9 @@ const NavBar = () => {
             onClick={() => navigate("/messages")}
           >
             <BsChatDots />
-            <BsCircleFill className="absolute top-3.5 right-0.5 text-[10px] text-warning" />
+            {unreadMessages && (
+              <BsCircleFill className="absolute top-3.5 right-0.5 text-[10px] text-warning" />
+            )}
           </div>
           <div
             className="relative transition-all p-1 text-white dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary cursor-pointer"

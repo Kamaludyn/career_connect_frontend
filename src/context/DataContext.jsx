@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
+import { useAuth } from "./AuthContext";
 
 // Create the ResourcesContext
 const DataContext = createContext();
@@ -16,6 +17,8 @@ export const DataProvider = ({ children }) => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const { user } = useAuth();
+
   // Remove the user and token from localStorage
   useEffect(() => {
     const fetchData = async () => {
@@ -29,12 +32,12 @@ export const DataProvider = ({ children }) => {
         ]);
 
         // Update state with the fetched data
-        setMentors(mentorsRes.data);
-        setJobs(jobsRes.data);
-        setResources(resourcesRes.data);
+        setMentors(mentorsRes?.data);
+        setJobs(jobsRes?.data);
+        setResources(resourcesRes?.data);
       } catch (error) {
         // Handle errors during the fetch
-        if (error.message === "Network Error") {
+        if (!error.response) {
           toast.error(error.message);
         } else {
           toast.error("Fetching data failed");
@@ -44,14 +47,14 @@ export const DataProvider = ({ children }) => {
       }
     };
     fetchData(); // Call the fetchData function
-  }, []);
+  }, [user?._id]);
 
   // Function to handle job applications
   const applyForJob = async (jobId) => {
     try {
       const response = await api.post(`/applications/${jobId}`);
       toast.success(response.data.message); // Show success message
-      return true
+      return true;
     } catch (error) {
       // Handle errors based on the response status
       if (error?.response?.status === 401) {
@@ -63,8 +66,8 @@ export const DataProvider = ({ children }) => {
       } else {
         toast.error("An Unknown Error Occurred"); // Generic error message
       }
-      return false
-    } 
+      return false;
+    }
   };
 
   // Define an asynchronous function to request mentorship
@@ -75,9 +78,9 @@ export const DataProvider = ({ children }) => {
         message,
       });
       toast.success(response.data.message);
-      return true // Return true indicating the request was successful
+      return true; // Return true indicating the request was successful
     } catch (error) {
-        // Handle different error cases that may occur during the API request
+      // Handle different error cases that may occur during the API request
       if (error?.code === "ERR_NETWORK") {
         toast.error(error?.message);
       } else if (error?.response?.status === 400) {
@@ -89,13 +92,20 @@ export const DataProvider = ({ children }) => {
       } else {
         toast.error("An Unknown Error Occurred");
       }
-      return false // Return false indicating the request failed
-    } 
+      return false; // Return false indicating the request failed
+    }
   };
 
   return (
     <DataContext.Provider
-      value={{ mentors, jobs, resources, applyForJob, requestMentorship, loading }}
+      value={{
+        mentors,
+        jobs,
+        resources,
+        applyForJob,
+        requestMentorship,
+        loading,
+      }}
     >
       {children}
     </DataContext.Provider>

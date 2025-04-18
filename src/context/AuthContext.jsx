@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }) => {
     // Remove the user and token from localStorage
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    localStorage.removeItem("chatMessages");
 
     // Remove Authorization header
     delete api.defaults.headers.common["Authorization"];

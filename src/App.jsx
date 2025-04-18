@@ -1,7 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { DataProvider } from "./context/DataContext";
+import { SocketProvider } from "./context/SocketContext";
+import { MessageProvider } from "./context/MessageContext";
 import MainLayout from "./layouts/MainLayout";
+import MentorsDashboard from "./layouts/MentorsDashboard";
+import EmployerDashboard from "./layouts/EmployerDashboard";
 import Home from "./pages/Home";
 import Messages from "./pages/Messages";
 import Mentorship from "./pages/Mentorship";
@@ -13,12 +17,10 @@ import SignUp from "./pages/SignUp";
 import JobDetails from "./pages/JobDetails";
 import StudentProfile from "./pages/StudentProfile";
 import MentorProfile from "./pages/MentorProfile";
-import MentorsDashboard from "./pages/MentorsDashboard";
 import MenteesList from "./pages/MenteesList";
 import MentorshipRequests from "./pages/MentorshipRequests";
 import MentorResources from "./pages/MentorResources";
 import ResourceDetails from "./pages/ResourceDetails";
-import EmployerDashboard from "./pages/EmployerDashboard";
 import EmployerPostedJobs from "./pages/EmployerPostedJobs";
 import Applicants from "./pages/Applicants";
 import PostJobForm from "./pages/PostJobForm";
@@ -32,9 +34,11 @@ import Reports from "./admin/pages/Reports";
 import NotificationsMgt from "./admin/pages/NotificationMgt";
 import Login from "./pages/Login";
 import PrivateRoute from "./components/PrivateRoute";
-import NotFound from "./pages/NotFound";
-import { Toaster } from "react-hot-toast";
 import EmployerJobDetails from "./pages/EmployerJobDetails";
+import NotFound from "./pages/NotFound";
+import IndexRoom from "./pages/IndexRoom";
+import { Toaster } from "react-hot-toast";
+import ChatRoom from "./pages/ChatRoom";
 
 function App() {
   const router = createBrowserRouter([
@@ -43,7 +47,11 @@ function App() {
       element: (
         <AuthProvider>
           <DataProvider>
-            <MainLayout />,
+            <SocketProvider>
+              <MessageProvider>
+                <MainLayout />
+              </MessageProvider>
+            </SocketProvider>
           </DataProvider>
         </AuthProvider>
       ),
@@ -62,7 +70,21 @@ function App() {
         },
         {
           path: "/messages",
-          element: <Messages />,
+          element: (
+            <PrivateRoute>
+              <Messages />,
+            </PrivateRoute>
+          ),
+          children: [
+            {
+              path: "",
+              element: <IndexRoom />,
+            },
+            {
+              path: ":id",
+              element: <ChatRoom />,
+            },
+          ],
         },
         {
           path: "/mentorship",
@@ -102,7 +124,11 @@ function App() {
         },
         {
           path: "/notifications",
-          element: <Notifications />,
+          element: (
+            <PrivateRoute>
+              <Notifications />,
+            </PrivateRoute>
+          ),
         },
         {
           path: "/mentor-dashboard",
@@ -198,9 +224,3 @@ function App() {
   );
 }
 export default App;
-
-// (    <>
-// <RouterProvider router={router} />
-// <Toaster position="top-right" reverseOrder={false} />
-//   </>
-// )

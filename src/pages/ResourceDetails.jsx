@@ -14,19 +14,19 @@ const ResourceDetails = () => {
 
   const navigate = useNavigate();
 
-// useEffect hook to fetch a selected resource data when the component mounts or when `id` changes
+  // useEffect hook to fetch a selected resource data when the component mounts or when `id` changes
   useEffect(() => {
-     // Function to fetch resource details from the API
+    // Function to fetch resource details from the API
     const fetchResource = async () => {
       setLoading(true);
       try {
         // Send a GET request to fetch resource details using the resource ID
         const response = await api.get(`/resources/${id}`);
 
-       // Update state with the fetched resource data
-       setResource(response.data);
+        // Update state with the fetched resource data
+        setResource(response.data);
       } catch (error) {
-          // Show an error notification if the API request fails
+        // Show an error notification if the API request fails
         toast.error("An Error Occurred while fetching the resource material");
       } finally {
         setLoading(false);
@@ -75,7 +75,6 @@ const ResourceDetails = () => {
         onClick={() => navigate(-1)}
       >
         <MdChevronLeft />
-        Back
       </button>
     </div>
   );

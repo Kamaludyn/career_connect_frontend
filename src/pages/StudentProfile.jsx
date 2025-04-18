@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import api from "../services/api";
-import { BsPersonCircle } from "react-icons/bs";
+import { BsPersonCircle, BsChevronLeft } from "react-icons/bs";
 
 const StudentProfile = () => {
   const [userData, setUserData] = useState({});
@@ -36,7 +36,7 @@ const StudentProfile = () => {
         className="w-fit py-2 px-4 border rounded-lg hover:bg-transparent bg-gray-300 dark:text-black dark:hover:bg-gray-700 hover:text-primary cursor-pointer"
         onClick={() => navigate(-1)}
       >
-        Back
+        <BsChevronLeft />
       </p>
       <div className="md:ml-[10%]">
         <div className="flex flex-col items-center md:flex-row gap-2 md:gap-4 mt-5">

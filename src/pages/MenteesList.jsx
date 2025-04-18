@@ -90,6 +90,12 @@ const MenteesList = () => {
                 >
                   {mentee.othername} {mentee.surname}
                 </p>
+                <button
+                  className="text-blue-500 hover:underline"
+                  onClick={() => navigate(`/messages/${mentee._id}`)}
+                >
+                  Send Message
+                </button>
               </div>
               <hr className="mt-2"></hr>
             </li>
