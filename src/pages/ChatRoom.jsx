@@ -41,7 +41,7 @@ const ChatRoom = () => {
               <div key={index}>
                 <div
                   className={`p-2 rounded-lg ${
-                    msg?.sender !== user?._id
+                    msg?.sender === user?._id
                       ? "bg-blue-500 w-4/5 text-white self-end ml-auto"
                       : "bg-gray-300 w-4/5 dark:bg-gray-600"
                   }`}
@@ -50,7 +50,7 @@ const ChatRoom = () => {
                 </div>
                 <p
                   className={`mb-3 rounded-lg text-xs ${
-                    msg?.sender !== user?._id
+                    msg?.sender === user?._id
                       ? "text-blue-500 w-1/4 ml-auto text-right"
                       : "text-gray-500 w-fit"
                   }`}
