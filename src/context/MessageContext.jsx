@@ -21,41 +21,33 @@ export const MessageProvider = ({ children }) => {
 
   // Fetch users and conversations when the user logs in or changes
   useEffect(() => {
-    // Fetch all users
-    const fetchUsers = async () => {
-      const res = await api.get("/users");
-      setUsers(res.data);
-    };
+    if (!user) return;
 
-    // Fetch all logged-in user conversations
-    const fetchConversations = async () => {
-      const res = await api.get(`/conversations/${user?._id}`);
-
-      // Only keep conversations that have at least one message
-      const filteredConvos = res.data.filter((convo) => convo.lastMessage);
-      setConversations(filteredConvos);
-
-      // Check if any conversation has unread messages from other users
-      const hasUnread = filteredConvos?.some(
-        (convo) =>
-          convo.lastMessage &&
-          convo.lastMessage.read === false &&
-          convo.lastMessage.sender !== user._id
-      );
-
-      // If there's at least one unread message, update the flag
-      if (hasUnread) {
-        setUnreadMessages(true);
-      }
-    };
-
-    // Call both users and conversations fucntions in parallel
     const fetchChats = async () => {
       setLoading(true);
       try {
-        await Promise.all([fetchUsers(), fetchConversations()]);
+        const usersRes = await api.get("/users");
+        setUsers(usersRes.data);
+
+        const convoRes = await api.get(`/conversations/${user?._id}`);
+
+        const filteredConvos = convoRes.data.filter(
+          (convo) => convo.lastMessage
+        );
+        setConversations(filteredConvos);
+
+        const hasUnread = filteredConvos?.some(
+          (convo) =>
+            convo.lastMessage &&
+            convo.lastMessage.read === false &&
+            convo.lastMessage.sender !== user._id
+        );
+
+        if (hasUnread) {
+          setUnreadMessages(hasUnread);
+        }
       } catch (error) {
-        console.error("Error Fetching Chats");
+        console.error("Error Fetching Conversations");
       } finally {
         setLoading(false);
       }
