@@ -18,7 +18,7 @@ export const SocketProvider = ({ children }) => {
     if (user?._id) {
       // Establish a new WebSocket connection to the backend server
       // The user's ID is passed as a query parameter for identification
-      const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
+      const newSocket = io(import.meta.env.SOCKET_URL, {
         query: { userId: user._id },
       });
 
