@@ -128,7 +128,7 @@ const NavBar = () => {
               id="modal"
               className={`scale-0 absolute top-8 left-1/2 transform -translate-x-1/2 min-w-20 p-3 mx-auto bg-white text-secondary text-base text-center rounded-md space-y-1 shadow-md shadow-gray-400 cursor-default 
                 ${openMenu ? "scale-100" : "scale-0"} 
-                group-hover:scale-100 group-hover:dark:bg-darkBg dark:shadow-gray-800 dark:border border-gray-700 
+                group-hover:scale-100 dark:bg-darkBg dark:shadow-gray-800 dark:border border-gray-700 
               `}
             >
               <p
@@ -139,7 +139,10 @@ const NavBar = () => {
               </p>
               {user && (
                 <>
-                  <p className="cursor-pointer hover:text-blue-900 hover:underline">
+                  <p
+                    onClick={() => navigate("/settings")}
+                    className="cursor-pointer hover:text-blue-900 hover:underline"
+                  >
                     Settings
                   </p>
                   <p

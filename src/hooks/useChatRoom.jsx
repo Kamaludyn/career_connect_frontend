@@ -107,7 +107,7 @@ const useChatRoom = () => {
           localStorage.setItem("chatMessages", JSON.stringify(storedChats));
         }
       } catch (error) {
-        console.error("Error loading chat:", error);
+        console.error("Error loading chat");
       } finally {
         setLoading(false);
       }
@@ -227,7 +227,6 @@ const useChatRoom = () => {
     setSelectedChat(false); // Hide chat UI (for mobile)
   };
 
-  // Return necessary state and handlers to the chat component
   return {
     user,
     receiverId,

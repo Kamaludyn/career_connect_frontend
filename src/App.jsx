@@ -39,6 +39,10 @@ import NotFound from "./pages/NotFound";
 import IndexRoom from "./pages/IndexRoom";
 import { Toaster } from "react-hot-toast";
 import ChatRoom from "./pages/ChatRoom";
+import Settings from "./pages/Settings";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import ChangePassword from "./pages/ChangePassword";
 
 function App() {
   const router = createBrowserRouter([
@@ -67,6 +71,22 @@ function App() {
         {
           path: "/login",
           element: <Login />,
+        },
+        {
+          path: "/settings",
+          element: <Settings />,
+        },
+        {
+          path: "/forgot-password",
+          element: <ForgotPassword />,
+        },
+        {
+          path: "/reset-password/:token",
+          element: <ResetPassword />,
+        },
+        {
+          path: "/change-password",
+          element: <ChangePassword />,
         },
         {
           path: "/messages",

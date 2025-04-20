@@ -140,10 +140,28 @@ export const MessageProvider = ({ children }) => {
             }
             return convo;
           });
+        } else {
+          const sender = users.find((user) => user._id === data.sender);
+          const newConvo = {
+            _id: data.conversationId,
+            participants: [
+              {
+                _id: user._id,
+                othername: user.othername,
+                surname: user.surname,
+              },
+              {
+                _id: data.sender,
+                othername: sender?.othername,
+                surname: sender?.surname,
+              },
+            ],
+            lastMessage: updatedMessage,
+            hasUnread: true,
+          };
+          return [newConvo, ...prev];
         }
-        return prev;
       });
-
       // If the message was from someone else and not being viewed, mark as unread
       if (data.sender !== user._id && !isCurrentChatOpen) {
         setUnreadMessages(true);

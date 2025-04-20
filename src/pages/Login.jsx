@@ -103,11 +103,22 @@ const Login = () => {
           >
             {loading ? <ClipLoader color="#ffffff" size={18} /> : "Login"}
           </button>
-          <div className="dark:text-white">
-            Don't have an Account?{" "}
-            <Link to="/sign-up" className="text-secondary">
-              Sign Up
-            </Link>
+          <div>
+            <div className="dark:text-white">
+              Forgot Password?{" "}
+              <Link
+                to="/forgot-password"
+                className="text-secondary my-2 hover:underline"
+              >
+                Click Here!
+              </Link>
+            </div>
+            <div className="dark:text-white">
+              Don't have an Account?{" "}
+              <Link to="/sign-up" className="text-secondary hover:underline">
+                Sign Up
+              </Link>
+            </div>
           </div>
         </form>
       </div>
