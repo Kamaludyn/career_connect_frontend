@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { useMessage } from "../context/MessageContext";
+import { useData } from "../context/DataContext";
 import ThemeToggle from "./ThemeToggle";
 import {
   BsPerson,
@@ -11,6 +12,7 @@ import {
   BsSearch,
 } from "react-icons/bs";
 import Menu from "./Menu";
+import { toast } from "react-hot-toast";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +22,13 @@ const NavBar = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const unreadMessages = useMessage()?.unreadMessages || false;
+  const {
+    searchQuery,
+    setSearchQuery,
+    setSearchResults,
+    searchSite,
+    setSearching,
+  } = useData();
 
   useEffect(() => {
     // Function to handle clicks outside search input
@@ -40,6 +49,42 @@ const NavBar = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
+  const handleSearchQuery = async () => {
+    if (!isOpen && window.innerWidth < 768) {
+      // Only expand input on small screen if not open
+      setIsOpen(true);
+      return;
+    }
+
+    if (searchQuery.trim()) {
+      setSearching(true);
+
+      // Clear search results before fetching
+      setSearchResults({});
+
+      // Navigate to search to show results
+      navigate("/search");
+
+      // Call search function
+      try {
+        const response = await searchSite(searchQuery);
+        setSearchResults(response);
+      } catch (error) {
+        // Handle error during search
+        toast.error("Search failed", error);
+      } finally {
+        setSearching(false);
+      }
+    }
+  };
+
+  // Call the search function when enter is clicked when searching
+  const handleEnter = (e) => {
+    if (e.key === "Enter" && searchQuery.trim()) {
+      handleSearchQuery();
+    }
+  };
 
   // Function to handle user logout
   const handleLogOut = () => {
@@ -66,7 +111,7 @@ const NavBar = () => {
         <div className="w-[90%] flex items-center justify-end gap-1 md:gap-5 md:pr-10 md:pl-10 text-[20px] md:text-2xl">
           <div
             ref={searchRef}
-            className={`md:mr-auto md:w-[60%] md:p-0 md:gap-0 md:pl-4 md:bg-lightBg md:rounded-3xl hover ${
+            className={`md:mr-auto md:w-[60%] md:p-0 md:gap-0 md:pl-2 md:bg-lightBg md:rounded-3xl hover ${
               isOpen
                 ? "w-full flex items-center gap-1 transition-all p-1 pr-2 bg-lightBg text-white dark:text-white rounded-3xl hover:text-primary cursor-pointer"
                 : "flex items-center gap-1 transition-all p-1 bg-transparent text-darkText rounded-md hover:bg-gray-300 md:hover:bg-lightBg md:dark:hover:bg-lightBg dark:hover:bg-gray-700 hover:text-primary cursor-pointer"
@@ -76,15 +121,18 @@ const NavBar = () => {
               type="text"
               name="search"
               id="search"
+              onKeyDown={(e) => handleEnter(e)}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className={`${
-                isOpen ? "block w-full outline-none pl-3" : "hidden"
-              } text-lightText md:block md:w-full md:outline-none md:py-1 rounded-l-3xl`}
+                isOpen ? "block w-full outline-none pl-3 text-sm" : "hidden"
+              } text-lightText md:block md:w-full md:outline-none md:pl-2 rounded-l-3xl md:text-base`}
             />
-            <div className="md:bg-gray-300 md:-mr-1 md:h-full p-1 md:p-2 rounded-r-3xl text-darkText md:text-primary hover:text-primary md:hover:bg-gray-100 md:dark:bg-gray-700 md:hover:dark:bg-textSecondary">
-              <BsSearch
-                className={`${isOpen && "text-primary"}`}
-                onClick={() => setIsOpen(true)}
-              />
+            <div
+              className="md:bg-gray-300 md:-mr-1 md:h-full p-1 md:p-2 rounded-r-3xl text-darkText md:text-primary hover:text-primary md:hover:bg-gray-100 md:dark:bg-gray-700 md:hover:dark:bg-textSecondary"
+              onClick={handleSearchQuery}
+            >
+              <BsSearch className={`${isOpen && "text-primary"}`} />
             </div>
           </div>
           {(user?.role === "mentor" || user?.role === "employer") && (

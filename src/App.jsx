@@ -43,6 +43,7 @@ import Settings from "./pages/Settings";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
+import Search from "./pages/Search";
 
 function App() {
   const router = createBrowserRouter([
@@ -71,6 +72,10 @@ function App() {
         {
           path: "/login",
           element: <Login />,
+        },
+        {
+          path: "/search",
+          element: <Search />,
         },
         {
           path: "/settings",
