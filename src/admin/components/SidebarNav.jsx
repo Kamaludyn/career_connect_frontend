@@ -4,51 +4,67 @@ import {
   BsMortarboard,
   BsBuilding,
   BsBriefcase,
-  BsFlag,
-  BsGear,
   BsBoxArrowRight,
 } from "react-icons/bs";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAdminAuth } from "../context/AdminAuthContext";
+import adminApi from "../services/AdminAxiosInstance";
+import { toast } from "react-hot-toast";
 
 const menuItems = [
   {
     label: "Overview",
     icon: <BsSpeedometer />,
-    route: "/dashboard",
+    route: "/admin",
   },
   {
     label: "Students",
     icon: <BsPeople />,
-    route: "/dashboard/students-management",
+    route: "/admin/student-management",
   },
   {
     label: "Mentors",
     icon: <BsMortarboard />,
-    route: "/dashboard/mentors-management",
+    route: "/admin/mentor-management",
   },
   {
     label: "Employers",
     icon: <BsBuilding />,
-    route: "/dashboard/employers-management",
+    route: "/admin/employer-management",
   },
   {
     label: "Jobs",
     icon: <BsBriefcase />,
-    route: "/dashboard/jobs-management",
-  },
-  {
-    label: "Reports",
-    icon: <BsFlag />,
-    route: "/dashboard/reports",
-  },
-  {
-    label: "Settings",
-    icon: <BsGear />,
-    route: "/dashboard/settings",
+    route: "/admin/job-management",
   },
 ];
 
 const SideBarNav = ({ isOpen, toggleMenu }) => {
+  const { logout } = useAdminAuth();
+  const navigate = useNavigate();
+
+  // Function to handle admin logout
+  const handleLogout = async () => {
+    const confirmLogout = confirm("Are sure you want to logout");
+
+    if (!confirmLogout) return;
+
+    try {
+      await adminApi.post("/admin/logout");
+
+      // Call logout function from admin auth context
+      logout();
+
+      // Display success message
+      toast.success("Logout Successful");
+
+      // Navigate admin user to admin login page
+      navigate("/admin/login");
+    } catch (error) {
+      // Displpay error message
+      toast.error("Logout Failed");
+    }
+  };
   return (
     <>
       <div
@@ -84,7 +100,10 @@ const SideBarNav = ({ isOpen, toggleMenu }) => {
             </li>
           ))}
           <li className="pt-10">
-            <button className="min-w-full pl-7 py-1 px-3 flex items-center gap-5 rounded-r-full hover:bg-cyan-300">
+            <button
+              className="min-w-full pl-7 py-1 px-3 flex items-center gap-5 rounded-r-full hover:bg-cyan-300"
+              onClick={handleLogout}
+            >
               <BsBoxArrowRight /> Logout
             </button>
           </li>

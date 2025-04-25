@@ -6,7 +6,7 @@ import { useAuth } from "./AuthContext";
 // Create the ResourcesContext
 const DataContext = createContext();
 
-// Custom hook to use the Auth context
+// Custom hook to use the Data context
 export const useData = () => {
   return useContext(DataContext);
 };
@@ -15,7 +15,14 @@ export const DataProvider = ({ children }) => {
   const [mentors, setMentors] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [resources, setResources] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState({
+    jobs: [],
+    mentors: [],
+    resources: [],
+  });
 
   const { user } = useAuth();
 
@@ -96,15 +103,29 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  const searchSite = async (query, page = 1, limit = 10) => {
+    const response = await api.get(
+      `/search?q=${query}&page=${page}&limit=${limit}`
+    );
+    return response.data;
+  };
+
   return (
     <DataContext.Provider
       value={{
         mentors,
         jobs,
         resources,
+        searchQuery,
+        setSearchQuery,
+        searchResults,
+        setSearchResults,
         applyForJob,
         requestMentorship,
+        searchSite,
         loading,
+        searching,
+        setSearching,
       }}
     >
       {children}

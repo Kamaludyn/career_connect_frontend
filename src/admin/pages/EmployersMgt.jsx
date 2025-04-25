@@ -1,82 +1,70 @@
 import { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import {
-  BsLock,
-  BsPatchCheckFill,
-  BsPersonCircle,
-  BsTrashFill,
-} from "react-icons/bs";
-
-const mockEmployers = [
-  {
-    id: 1,
-    company: "TechCorp",
-    contactPerson: "John Doe",
-    email: "hr@techcorp.com",
-    industry: "Technology",
-    status: "Verified",
-  },
-  {
-    id: 2,
-    company: "MediHealth",
-    contactPerson: "Sarah Lee",
-    email: "contact@medihealth.com",
-    industry: "Healthcare",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    company: "FinBank",
-    contactPerson: "Michael Smith",
-    email: "michael@finbank.com",
-    industry: "Finance",
-    status: "Verified",
-  },
-];
+import { BsPersonCircle, BsTrashFill } from "react-icons/bs";
+import { useAdminData } from "../context/AdminDataContext";
+import adminApi from "../services/AdminAxiosInstance";
+import { toast } from "react-hot-toast";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const EmployersMgt = () => {
-  const [employers, setEmployers] = useState(mockEmployers);
+  const { users } = useAdminData();
 
+  // Filter the list of users to extract only those with the role of "employer"
+  const employer_list = users?.filter((user) => user.role === "employer");
+
+  const [employers, setEmployers] = useState(employer_list);
+  const [loading, setLoading] = useState({});
+
+  // Function to handle deletion of a employer
+  const deleteEmployer = async (rowData) => {
+    // Confirm deletion
+    const confirmDelete = confirm(
+      `Are you sure you want to delete this employer "${
+        rowData.surname + " " + rowData.othername
+      }"?`
+    );
+    // If user cancels the confirmation, exit the function
+    if (!confirmDelete) return;
+
+    setLoading((prev) => ({ ...prev, [rowData._id]: true }));
+
+    try {
+      // Make DELETE request to the backend API to remove the employer by ID
+      await adminApi.delete(`/users/${rowData._id}`);
+
+      // Update the employers state to remove the deleted employer
+      setEmployers((prev) =>
+        prev.filter((employer) => employer._id !== rowData._id)
+      );
+
+      // Show success message to the admin
+      toast.success("Employer Deleted Successfully");
+    } catch (error) {
+      toast.error("Failed To Delete Employer");
+    } finally {
+      setLoading((prev) => ({ ...prev, [rowData._id]: false }));
+    }
+  };
+
+  // Component to render a placeholder profile picture using an icon
   const ProfilePicBodyTemplate = () => (
     <BsPersonCircle className="w-10 h-10 text-center mx-auto" />
   );
 
-  const statusBodyTemplate = (rowData) => (
-    <span
-      className={`px-3 py-1 rounded-full ${
-        rowData.status === "Verified"
-          ? "bg-green-500 text-white"
-          : "bg-yellow-500 text-white"
-      }`}
-    >
-      {rowData.status}
-    </span>
-  );
-
+  // Template for rendering delete button in the table
   const actionBodyTemplate = (rowData) => (
-    <div className="flex gap-2">
-      <button className="w-5 rounded-xl text-primary font-semibold cursor-default">
-        {rowData.status === "Pending" && (
-          <BsPatchCheckFill
-            title="Verify"
-            className="cursor-pointer"
-          />
-        )}
-      </button>
-      <button
-        title="Suspend"
-        className="rounded-xl text-success font-semibold"
-      >
-        <BsLock />
-      </button>
-      <button
-        title="Delete"
-        className="rounded-xl text-error font-semibold"
-      >
-        <BsTrashFill />
-      </button>
-    </div>
+    <button
+      title="Delete"
+      className="rounded-xl text-error font-semibold"
+      onClick={() => deleteEmployer(rowData)}
+    >
+      {loading[rowData._id] ? (
+        <ClipLoader color="#ffffff" size={18} />
+      ) : (
+        <BsTrashFill title="Delete" />
+      )}
+    </button>
   );
 
   return (
@@ -90,9 +78,13 @@ const EmployersMgt = () => {
           value={employers}
           paginator
           rows={10}
+          rowsPerPageOptions={[5, 10, 25, 50]}
           showGridlines
-          // rowsPerPageOptions={[5, 10, 25, 50]}
-          className="dark:text-white"
+          tableStyle={{
+            minWidth: "100%",
+          }}
+          rowHover
+          className="w-full dark:text-white mb-4"
         >
           <Column
             field="ProfilePic"
@@ -106,7 +98,7 @@ const EmployersMgt = () => {
             }}
           ></Column>
           <Column
-            field="company"
+            field="companyName"
             header="Company Name"
             sortable
             headerClassName="custom-header"
@@ -118,6 +110,7 @@ const EmployersMgt = () => {
           <Column
             field="contactPerson"
             header="Contact Person"
+            body={(rowData) => `${rowData.surname} ${rowData.othername}`}
             sortable
             headerClassName="custom-header"
             style={{
@@ -138,17 +131,6 @@ const EmployersMgt = () => {
           <Column
             field="industry"
             header="Industry"
-            sortable
-            headerClassName="custom-header"
-            style={{
-              whiteSpace: "nowrap",
-              padding: "4px",
-            }}
-          ></Column>
-          <Column
-            field="status"
-            header="Status"
-            body={statusBodyTemplate}
             sortable
             headerClassName="custom-header"
             style={{

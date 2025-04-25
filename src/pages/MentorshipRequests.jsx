@@ -144,9 +144,9 @@ const MentorshipRequests = () => {
         <ul className="mt-2 p-2 pb-4 md:p-4 space-y-3 bg-lightBg dark:bg-gray-800 rounded-2xl">
           {requests?.map((req) => (
             <li
-              key={req._id}
+              key={req?._id}
               className={`${
-                req.mentee._id === highlightId
+                req.mentee?._id === highlightId
                   ? "bg-blue-300 animate-pulse"
                   : "bg-transparent"
               } flex flex-col p-2 pb-0 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md`}
@@ -154,12 +154,12 @@ const MentorshipRequests = () => {
               <p
                 className="font-medium hover:underline"
                 onClick={() =>
-                  navigate(`/student-profile/${req.mentee._id}`, {
+                  navigate(`/student-profile/${req.mentee?._id}`, {
                     state: { user: req.mentee },
                   })
                 }
               >
-                {req.mentee.othername} {req.mentee.surname}
+                {req.mentee?.othername} {req.mentee?.surname}
               </p>
               <p className="text-sm text-gray-600">{req.message}</p>
               <p

@@ -1,54 +1,70 @@
 import { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { BsPersonCircle, BsLock, BsTrashFill } from "react-icons/bs";
-
-const mockStudents = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    department: "Computer",
-    level: 100,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    department: "Banking",
-    level: 300,
-  },
-  {
-    id: 3,
-    name: "Michael Johnson",
-    email: "michael@example.com",
-    department: "Chemistry",
-    level: 400,
-  },
-];
+import { BsPersonCircle, BsTrashFill } from "react-icons/bs";
+import { useAdminData } from "../context/AdminDataContext";
+import adminApi from "../services/AdminAxiosInstance";
+import { toast } from "react-hot-toast";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const StudentsMgt = () => {
-  const [students, setStudents] = useState(mockStudents);
+  const { users } = useAdminData();
 
+  // Filter the list of users to extract only those with the role of "student"
+  const student_list = users?.filter((user) => user.role === "student");
+
+  // Initialize state to manage the list of students
+  const [students, setStudents] = useState(student_list);
+  const [loading, setLoading] = useState({});
+
+  // Function to handle deletion of a student
+  const deleteStudent = async (rowData) => {
+    // Confirm deletion
+    const confirmDelete = confirm(
+      `Are you sure you want to delete this student "${
+        rowData.surname + " " + rowData.othername
+      }"?`
+    );
+    if (!confirmDelete) return;
+
+    setLoading((prev) => ({ ...prev, [rowData._id]: true }));
+
+    try {
+      // Make DELETE request to the backend API to remove the student by ID
+      await adminApi.delete(`/users/${rowData._id}`);
+
+      // Update the students state to remove the deleted student
+      setStudents((prev) =>
+        prev.filter((employer) => employer._id !== rowData._id)
+      );
+
+      // Show success message to the admin
+      toast.success("Student deleted successfully");
+    } catch (error) {
+      toast.error("Failed To Delete Student");
+    } finally {
+      setLoading((prev) => ({ ...prev, [rowData._id]: false }));
+    }
+  };
+
+  // Component to render a placeholder profile picture using an icon
   const ProfilePicBodyTemplate = () => (
     <BsPersonCircle className="w-10 h-10 text-center mx-auto" />
   );
 
-  const actionBodyTemplate = () => (
-    <div className="flex gap-2">
-      <button
-        title="Suspend"
-        className="rounded-xl text-success font-semibold"
-      >
-        <BsLock />
-      </button>
-      <button
-        title="Delete"
-        className="rounded-xl text-error font-semibold"
-      >
-        <BsTrashFill />
-      </button>
-    </div>
+  // Template for rendering delete button in the table
+  const actionBodyTemplate = (rowData) => (
+    <button
+      title="Delete"
+      className="rounded-xl text-error font-semibold"
+      onClick={() => deleteStudent(rowData)}
+    >
+      {loading[rowData._id] ? (
+        <ClipLoader color="#ffffff" size={18} />
+      ) : (
+        <BsTrashFill title="Delete" />
+      )}
+    </button>
   );
 
   return (
@@ -59,10 +75,14 @@ const StudentsMgt = () => {
         <DataTable
           value={students}
           paginator
-          // removableSort
+          rows={10}
+          rowsPerPageOptions={[5, 10, 25, 50]}
           showGridlines
-          rows={5}
-          className="w-full dark:text-white"
+          tableStyle={{
+            minWidth: "100%",
+          }}
+          rowHover
+          className="w-full dark:text-white mb-4"
         >
           <Column
             field="ProfilePic"
@@ -78,6 +98,7 @@ const StudentsMgt = () => {
           <Column
             field="name"
             header="Name of Students"
+            body={(rowData) => `${rowData.surname} ${rowData.othername}`}
             sortable
             headerClassName="custom-header"
             style={{

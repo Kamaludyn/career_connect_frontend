@@ -1,16 +1,16 @@
 import { useState } from "react";
-import api from "../services/api";
-import { Link, useNavigate } from "react-router-dom";
+import adminApi from "../services/AdminAxiosInstance";
+import { useNavigate } from "react-router-dom";
+import { useAdminAuth } from "../context/AdminAuthContext";
 import ClipLoader from "react-spinners/ClipLoader";
 import { toast } from "react-hot-toast";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import { useAuth } from "../context/AuthContext";
 
-const Login = () => {
+const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login } = useAuth();
+  const { login } = useAdminAuth();
 
   const navigate = useNavigate();
 
@@ -28,22 +28,25 @@ const Login = () => {
     const loginForm = e.target;
 
     // Extracting form values and structuring them into an object
-    const userData = {
+    const adminData = {
       email: loginForm.email.value,
       password: loginForm.password.value,
     };
+    console.log("adminData", adminData);
 
     try {
       // Sends a POST request to the authentication endpoint with user credentials
-      const response = await api.post("/auth/login", userData);
+      const response = await adminApi.post("/admin/login", adminData);
+      console.log("admin login", response.data);
 
-      // Stores the authentication token and user data upon successful login
-      login(response.data.token, response.data.user);
+      // Stores the authentication access token and admin data upon successful login
+      login(response.data.token, response.data.admin);
 
-      // Navigates the user to the home page after successful login
-      navigate("/");
+      // Navigates the user to the Admin home page after successful login
+      navigate("/admin");
       toast.success("Login Successful");
     } catch (error) {
+      console.log("admin login error", error?.response);
       // Handles different error scenarios
       if (error?.code === "ERR_NETWORK") {
         toast.error(error?.message);
@@ -60,10 +63,13 @@ const Login = () => {
   };
 
   return (
-    <section className="flex justify-center rounded-xl">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg h-fit w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center dark:text-darkText">
-          Login
+    <section className="min-h-screen bg-primary flex flex-col justify-center items-center">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg h-fit w-full max-w-md m-4">
+        <div className="flex items-center justify-center w-20 h-20 mx-auto text-4xl font-black mb-6 bg-primary text-white rounded-full">
+          CC
+        </div>
+        <h2 className="font-semibold text-center mb-6 text-[#666666]">
+          Login to access the Admin Dashboard
         </h2>
 
         <form className="space-y-4 mt-4" onSubmit={handleSubmit}>
@@ -103,27 +109,11 @@ const Login = () => {
           >
             {loading ? <ClipLoader color="#ffffff" size={18} /> : "Login"}
           </button>
-          <div>
-            <div className="dark:text-white">
-              Forgot Password?{" "}
-              <Link
-                to="/forgot-password"
-                className="text-secondary my-2 hover:underline"
-              >
-                Click Here!
-              </Link>
-            </div>
-            <div className="dark:text-white">
-              Don't have an Account?{" "}
-              <Link to="/sign-up" className="text-secondary hover:underline">
-                Sign Up
-              </Link>
-            </div>
-          </div>
+          <div></div>
         </form>
       </div>
     </section>
   );
 };
 
-export default Login;
+export default AdminLogin;

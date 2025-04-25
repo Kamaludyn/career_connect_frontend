@@ -49,9 +49,7 @@ export default function EmployerJobDetails() {
       setJobDetails((prev) => ({
         ...prev,
         applicants: prev.applicants.map((applicant) =>
-          applicant._id === applicationId
-            ? { ...applicant, status } 
-            : applicant
+          applicant._id === applicationId ? { ...applicant, status } : applicant
         ),
       }));
 
@@ -122,20 +120,20 @@ export default function EmployerJobDetails() {
         <strong className="self-center">Applications</strong>
         {jobDetails?.applicants?.map((applicant) => (
           <div
-            key={applicant.applicant._id}
+            key={applicant?.applicant?._id}
             className="flex flex-col md:flex-row justify-between items-center gap-2 mt-2 py-1.5 border-b border-gray-400"
           >
             <p
               onClick={() =>
-                navigate(`/student-profile/${applicant.applicant._id}`)
+                navigate(`/student-profile/${applicant?.applicant?._id}`)
               }
               className={`hover:underline cursor-pointer ${
                 applicant.status === "rejected" ? "text-error" : "text-primary"
               }`}
             >
-              {applicant.applicant.othername} {applicant.applicant.surname}
+              {applicant?.applicant?.othername} {applicant?.applicant?.surname}
             </p>
-            {applicant.status === "pending" ? (
+            {applicant?.status === "pending" ? (
               <div className="space-x-2">
                 <button
                   className="px-3 py-1 bg-success border hover:border-success text-white hover:bg-white hover:text-success rounded"
@@ -145,7 +143,7 @@ export default function EmployerJobDetails() {
                 </button>
                 <button
                   className="px-3 py-1 border hover:border-error bg-error hover:bg-white hover:text-error text-white rounded"
-                  onClick={() => handleReview(applicant._id, "rejected")}
+                  onClick={() => handleReview(applicant?._id, "rejected")}
                 >
                   Reject
                 </button>
@@ -164,7 +162,7 @@ export default function EmployerJobDetails() {
                 </p>
                 {applicant.status === "accepted" && (
                   <button
-                    className="italic px-3 py-1 bg-success border hover:border-success text-white hover:bg-white hover:text-success rounded"
+                    className="italic px-3 py-1 bg-success border border-success hover:border-white text-white hover:bg-white hover:text-success rounded"
                     onClick={() =>
                       navigate(`/messages/${applicant.applicant._id}`)
                     }

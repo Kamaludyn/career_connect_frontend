@@ -3,6 +3,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { DataProvider } from "./context/DataContext";
 import { SocketProvider } from "./context/SocketContext";
 import { MessageProvider } from "./context/MessageContext";
+import { AdminAuthProvider } from "./admin/context/AdminAuthContext";
+import { AdminDataProvider } from "./admin/context/AdminDataContext";
 import MainLayout from "./layouts/MainLayout";
 import MentorsDashboard from "./layouts/MentorsDashboard";
 import EmployerDashboard from "./layouts/EmployerDashboard";
@@ -25,13 +27,13 @@ import EmployerPostedJobs from "./pages/EmployerPostedJobs";
 import Applicants from "./pages/Applicants";
 import PostJobForm from "./pages/PostJobForm";
 import AdminLayout from "./admin/AdminLayout";
+import AdminLogin from "./admin/pages/Login";
 import Overview from "./admin/pages/Overview";
 import StudentsMgt from "./admin/pages/StudentsMgt";
 import MentorsMgt from "./admin/pages/MentorsMgt";
 import EmployersMgt from "./admin/pages/EmployersMgt";
 import JobsMgt from "./admin/pages/JobsMgt";
-import Reports from "./admin/pages/Reports";
-import NotificationsMgt from "./admin/pages/NotificationMgt";
+import AdminProfile from "./admin/pages/AdminProfile";
 import Login from "./pages/Login";
 import PrivateRoute from "./components/PrivateRoute";
 import EmployerJobDetails from "./pages/EmployerJobDetails";
@@ -44,6 +46,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ChangePassword from "./pages/ChangePassword";
 import Search from "./pages/Search";
+import PrivateAdminRoute from "./admin/components/PrivateAdminRoute";
 
 function App() {
   const router = createBrowserRouter([
@@ -198,36 +201,52 @@ function App() {
       ],
     },
     {
-      path: "/dashboard",
-      element: <AdminLayout />,
+      path: "/admin/login",
+      element: (
+        <AdminAuthProvider>
+          <AdminLogin />
+        </AdminAuthProvider>
+      ),
+    },
+    {
+      path: "/admin",
+      element: (
+        <AdminAuthProvider>
+          <PrivateAdminRoute>
+            <AdminDataProvider>
+              <AdminLayout />,
+            </AdminDataProvider>
+          </PrivateAdminRoute>
+        </AdminAuthProvider>
+      ),
       children: [
+        {
+          path: "profile",
+          element: <AdminProfile />,
+        },
         {
           path: "",
           element: <Overview />,
         },
         {
-          path: "students-management",
+          path: "student-management",
           element: <StudentsMgt />,
         },
         {
-          path: "mentors-management",
+          path: "mentor-management",
           element: <MentorsMgt />,
         },
         {
-          path: "employers-management",
+          path: "employer-management",
           element: <EmployersMgt />,
         },
         {
-          path: "jobs-management",
+          path: "job-management",
           element: <JobsMgt />,
         },
         {
-          path: "reports",
-          element: <Reports />,
-        },
-        {
-          path: "notifications",
-          element: <NotificationsMgt />,
+          path: "resource-management",
+          element: <JobsMgt />,
         },
       ],
     },

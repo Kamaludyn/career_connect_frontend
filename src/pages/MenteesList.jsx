@@ -75,7 +75,7 @@ const MenteesList = () => {
         <ul className="mt-2 p-2 md:p-4 space-y-2 bg-lightBg dark:bg-gray-800 rounded-2xl">
           {filteredMentees?.map((mentee) => (
             <li
-              key={mentee._id}
+              key={mentee?._id}
               className="flex items-center p-2 pb-0 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 rounded-md"
             >
               <BsPersonCircle className="h-12 w-12 mr-3 rounded-full text-lightText dark:text-darkText" />
@@ -83,16 +83,16 @@ const MenteesList = () => {
                 <p
                   className="font-medium dark:text-darkText hover:underline"
                   onClick={() =>
-                    navigate(`/student-profile/${mentee._id}`, {
+                    navigate(`/student-profile/${mentee?._id}`, {
                       state: { user: mentee },
                     })
                   }
                 >
-                  {mentee.othername} {mentee.surname}
+                  {mentee?.othername} {mentee?.surname}
                 </p>
                 <button
                   className="text-blue-500 hover:underline"
-                  onClick={() => navigate(`/messages/${mentee._id}`)}
+                  onClick={() => navigate(`/messages/${mentee?._id}`)}
                 >
                   Send Message
                 </button>

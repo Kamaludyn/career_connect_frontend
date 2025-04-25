@@ -1,70 +1,55 @@
 import { useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { BsLock, BsPatchCheckFill, BsTrashFill } from "react-icons/bs";
-
-const mockJobs = [
-  {
-    id: 1,
-    title: "Frontend Developer",
-    company: "TechCorp",
-    location: "Remote",
-    type: "Full-time",
-    level: "Mid-Level",
-    salary: "$60,000 - $80,000",
-    status: "Approved",
-  },
-  {
-    id: 2,
-    title: "Data Analyst",
-    company: "FinBank",
-    location: "New York, USA",
-    type: "Part-time",
-    level: "Entry-Level",
-    salary: "$50,000 - $65,000",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    title: "Cybersecurity Engineer",
-    company: "MediHealth",
-    location: "Hybrid",
-    type: "Full-time",
-    level: "Senior-Level",
-    salary: "$90,000 - $120,000",
-    status: "Approved",
-  },
-];
+import { BsTrashFill } from "react-icons/bs";
+import { useAdminData } from "../context/AdminDataContext";
+import adminApi from "../services/AdminAxiosInstance";
+import { toast } from "react-hot-toast";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const JobsMgt = () => {
-  const [jobs, setJobs] = useState(mockJobs);
+  const { jobs, setJobs } = useAdminData();
+  const [loading, setLoading] = useState({});
 
-  const statusBodyTemplate = (rowData) => (
-    <span
-      className={`px-3 py-1 rounded-full ${
-        rowData.status === "Approved"
-          ? "bg-green-500 text-white"
-          : "bg-yellow-500 text-white"
-      }`}
-    >
-      {rowData.status}
-    </span>
-  );
+  // Function to handle deletion of a job
+  const deleteJob = async (rowData) => {
+    // Confirm deletion
+    const confirmDelete = confirm(
+      `Are you sure you want to delete this job "${rowData.title}"?`
+    );
+    // If user cancels the confirmation, exit the function
+    if (!confirmDelete) return;
+    setLoading((prev) => ({ ...prev, [rowData._id]: true }));
+    try {
+      // Make DELETE request to the backend API to remove the job by ID
+      console.log("rowdata id", rowData._id);
+      await adminApi.delete(`/admin/jobs/${rowData._id}`);
 
+      // Update the jobs state to remove the deleted job
+      setJobs((prev) => prev.filter((job) => job._id !== rowData._id));
+
+      // Show success message to the admin
+      toast.success("Job Deleted Successfully");
+    } catch (error) {
+      toast.error("Failed To Delete Job");
+    } finally {
+      setLoading((prev) => ({ ...prev, [rowData._id]: false }));
+    }
+  };
+
+  // Template for rendering delete button in the table
   const actionBodyTemplate = (rowData) => (
-    <div className="flex gap-2">
-      <button className="w-5 rounded-xl text-primary font-semibold cursor-default">
-        {rowData.status === "Pending" && (
-          <BsPatchCheckFill title="Approve" className="cursor-pointer" />
-        )}
-      </button>
-      <button title="Suspend" className="rounded-xl text-success font-semibold">
-        <BsLock />
-      </button>
-      <button title="Delete" className="rounded-xl text-error font-semibold">
+    <button
+      title="Delete"
+      className="rounded-xl text-error font-semibold"
+      onClick={() => deleteJob(rowData)}
+    >
+      {loading[rowData._id] ? (
+        <ClipLoader color="#ffffff" size={18} />
+      ) : (
         <BsTrashFill />
-      </button>
-    </div>
+      )}
+    </button>
   );
 
   return (
@@ -74,7 +59,18 @@ const JobsMgt = () => {
       </h2>
 
       <div className="bg-white dark:bg-gray-800 p-4 border border-gray-100 dark:border-none shadow-md rounded-md">
-        <DataTable value={jobs} paginator rows={5} className="dark:text-white">
+        <DataTable
+          value={jobs}
+          paginator
+          rows={10}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+          showGridlines
+          tableStyle={{
+            minWidth: "100%",
+          }}
+          rowHover
+          className="w-full dark:text-white mb-4"
+        >
           <Column
             field="title"
             header="Job Title"
@@ -116,8 +112,8 @@ const JobsMgt = () => {
             }}
           ></Column>
           <Column
-            field="level"
-            header="Level"
+            field="currency"
+            header="Currency"
             sortable
             headerClassName="custom-header"
             style={{
@@ -126,21 +122,14 @@ const JobsMgt = () => {
             }}
           ></Column>
           <Column
-            field="salary"
-            header="Salary"
+            field="minSalary"
+            header="Minimum Salary"
             sortable
             headerClassName="custom-header"
             style={{
               whiteSpace: "nowrap",
               padding: "4px",
             }}
-          ></Column>
-          <Column
-            field="status"
-            header="Status"
-            body={statusBodyTemplate}
-            sortable
-            headerClassName="custom-header"
           ></Column>
           <Column
             header="Actions"

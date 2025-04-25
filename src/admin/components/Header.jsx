@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import ThemeToggle from "../../components/ThemeToggle";
-import { BsPersonCircle, BsList, BsBell, BsCircleFill } from "react-icons/bs";
+import { BsPersonCircle, BsList } from "react-icons/bs";
 
 const Header = ({ toggleMenu }) => {
   const navigate = useNavigate();
@@ -25,15 +25,8 @@ const Header = ({ toggleMenu }) => {
           <BsPersonCircle
             title="My Profile"
             className="text-white text-3xl hover:bg-[#ffffff28] p-1 rounded-md cursor-pointer"
-            onClick={() => navigate("/dashboard/profile")}
+            onClick={() => navigate("/admin/profile")}
           />
-          <div
-            className="relative transition-all p-1 text-3xl text-white dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-primary cursor-pointer"
-            onClick={() => navigate("/dashboard/notifications")}
-          >
-            <BsBell className="text-xl" />
-            <BsCircleFill className="absolute top-3.5 right-0.5 text-[10px] text-warning" />
-          </div>
           <ThemeToggle />
         </div>
       </header>
