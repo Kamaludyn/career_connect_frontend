@@ -2,72 +2,73 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { handleNotificationNavigation } from "../utils/NotificationRouter";
-import { toast } from "react-hot-toast"
+import { useData } from "../context/DataContext";
+import { toast } from "react-hot-toast";
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { notifications, loading } = useData();
+  // const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      setLoading(true);
+  // useEffect(() => {
+  // const fetchNotifications = async () => {
+  //   setLoading(true);
 
-      try {
-        const response = await api.get("/notifications");
-        // Current timestamp in milliseconds which allows for time manipulation and comparison.
-        const currentTime = new Date();
+  //   try {
+  //     const response = await api.get("/notifications");
+  //     // Current timestamp in milliseconds which allows for time manipulation and comparison.
+  //     const currentTime = new Date();
 
-        const notificationTime = response.data.map((res) => {
-          // Convert createdAt to a Date object which also allows for time manipulation and comparison.
-          const createdTime = new Date(res.createdAt);
+  //     const formattedNotification = response.data.map((res) => {
+  //       // Convert createdAt to a Date object which also allows for time manipulation and comparison.
+  //       const createdTime = new Date(res.createdAt);
 
-          // Get time difference (the result is in milliseconds)
-          const timeDifference = currentTime - createdTime;
+  //       // Get time difference (the result is in milliseconds)
+  //       const timeDifference = currentTime - createdTime;
 
-          // Divide the timeDifference(milliseconds) by 1000 to convert to seconds
-          const seconds = Math.floor(timeDifference / 1000);
+  //       // Divide the timeDifference(milliseconds) by 1000 to convert to seconds
+  //       const seconds = Math.floor(timeDifference / 1000);
 
-          // Divide the seconds by 60 to get minutes
-          const minutes = Math.floor(seconds / 60);
+  //       // Divide the seconds by 60 to get minutes
+  //       const minutes = Math.floor(seconds / 60);
 
-          // Divide the minutes by 60 to get hours
-          const hours = Math.floor(minutes / 60);
+  //       // Divide the minutes by 60 to get hours
+  //       const hours = Math.floor(minutes / 60);
 
-          // Divide the hours by 24 to get hours
-          const days = Math.floor(hours / 24);
+  //       // Divide the hours by 24 to get hours
+  //       const days = Math.floor(hours / 24);
 
-          let timeCreated;
+  //       let timeCreated;
 
-          // Determine the timeCreated based on the time difference
-          if (seconds < 60) {
-            timeCreated = `${seconds} sec ago`;
-          } else if (minutes < 60) {
-            timeCreated = `${minutes} min ago`;
-          } else if (hours < 24) {
-            timeCreated = `${hours} hours ago`;
-          } else {
-            timeCreated = `${days} days ago`;
-          }
+  //       // Determine the timeCreated based on the time difference
+  //       if (seconds < 60) {
+  //         timeCreated = `${seconds} sec ago`;
+  //       } else if (minutes < 60) {
+  //         timeCreated = `${minutes} min ago`;
+  //       } else if (hours < 24) {
+  //         timeCreated = `${hours} hours ago`;
+  //       } else {
+  //         timeCreated = `${days} days ago`;
+  //       }
 
-          // Add timeCreated to each notification
-          return { ...res, timeCreated };
-        });
-        setNotifications(notificationTime);
-      } catch (error) {
-        if(error?.code === "ERR_NETWORK"){
-          toast.error("Network Error")
-        }else{
-        console.error("Error getting notifications");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       // Add timeCreated to each notification
+  //       return { ...res, timeCreated };
+  //     });
+  //     setNotifications(formattedNotification);
+  //   } catch (error) {
+  //     if (error?.code === "ERR_NETWORK") {
+  //       toast.error("Network Error");
+  //     } else {
+  //       console.error("Error getting notifications");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-    fetchNotifications();
-  }, []);
+  // fetchNotifications();
+  // }, []);
 
   // Function to handle read all notifcation
   const markAllAsRead = async () => {
@@ -115,6 +116,8 @@ const Notifications = () => {
             </div>
           ))}
         </div>
+      ) : notifications.length === 0 ? (
+        <p className="text-xl text-center">You have no notifications yet.</p>
       ) : (
         <div className="space-y-3">
           {notifications?.map((notification) => (

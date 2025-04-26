@@ -32,12 +32,10 @@ const AdminLogin = () => {
       email: loginForm.email.value,
       password: loginForm.password.value,
     };
-    console.log("adminData", adminData);
 
     try {
       // Sends a POST request to the authentication endpoint with user credentials
       const response = await adminApi.post("/admin/login", adminData);
-      console.log("admin login", response.data);
 
       // Stores the authentication access token and admin data upon successful login
       login(response.data.token, response.data.admin);
@@ -46,7 +44,6 @@ const AdminLogin = () => {
       navigate("/admin");
       toast.success("Login Successful");
     } catch (error) {
-      console.log("admin login error", error?.response);
       // Handles different error scenarios
       if (error?.code === "ERR_NETWORK") {
         toast.error(error?.message);

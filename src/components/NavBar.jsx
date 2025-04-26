@@ -28,6 +28,7 @@ const NavBar = () => {
     setSearchResults,
     searchSite,
     setSearching,
+    unReadNotifications,
   } = useData();
 
   useEffect(() => {
@@ -164,7 +165,9 @@ const NavBar = () => {
             onClick={() => navigate("/notifications")}
           >
             <BsBell />
-            <BsCircleFill className="absolute top-3.5 right-0.5 text-[10px] text-warning" />
+            {unReadNotifications && (
+              <BsCircleFill className="absolute top-3.5 right-0.5 text-[10px] text-warning" />
+            )}
           </div>
           <div
             ref={profileMenuRef}

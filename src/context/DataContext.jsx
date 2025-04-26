@@ -15,6 +15,8 @@ export const DataProvider = ({ children }) => {
   const [mentors, setMentors] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [resources, setResources] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [unReadNotifications, setUnReadNotifications] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -53,6 +55,68 @@ export const DataProvider = ({ children }) => {
         setLoading(false);
       }
     };
+
+    const fetchNotifications = async () => {
+      setLoading(true);
+
+      try {
+        const response = await api.get("/notifications");
+
+        // Check if any notification is unread
+        setUnReadNotifications(response.data.some((n) => n.isRead !== true));
+
+        // Current timestamp in milliseconds which allows for time manipulation and comparison.
+        const currentTime = new Date();
+
+        const formattedNotification = response.data.map((res) => {
+          // Convert createdAt to a Date object which also allows for time manipulation and comparison.
+          const createdTime = new Date(res.createdAt);
+
+          // Get time difference (the result is in milliseconds)
+          const timeDifference = currentTime - createdTime;
+
+          // Divide the timeDifference(milliseconds) by 1000 to convert to seconds
+          const seconds = Math.floor(timeDifference / 1000);
+
+          // Divide the seconds by 60 to get minutes
+          const minutes = Math.floor(seconds / 60);
+
+          // Divide the minutes by 60 to get hours
+          const hours = Math.floor(minutes / 60);
+
+          // Divide the hours by 24 to get hours
+          const days = Math.floor(hours / 24);
+
+          let timeCreated;
+
+          // Determine the timeCreated based on the time difference
+          if (seconds < 60) {
+            timeCreated = `${seconds} sec ago`;
+          } else if (minutes < 60) {
+            timeCreated = `${minutes} min ago`;
+          } else if (hours < 24) {
+            timeCreated = `${hours} hours ago`;
+          } else {
+            timeCreated = `${days} days ago`;
+          }
+
+          // Add timeCreated to each notification
+          return { ...res, timeCreated };
+        });
+        setNotifications(formattedNotification);
+      } catch (error) {
+        if (error?.code === "ERR_NETWORK") {
+          toast.error("Network Error");
+        } else {
+          console.error("Error getting notifications", error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications(); // Call the fetchNotifications function
+
     fetchData(); // Call the fetchData function
   }, [user?._id]);
 
@@ -116,6 +180,9 @@ export const DataProvider = ({ children }) => {
         mentors,
         jobs,
         resources,
+        notifications,
+        unReadNotifications,
+        setNotifications,
         searchQuery,
         setSearchQuery,
         searchResults,

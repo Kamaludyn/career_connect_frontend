@@ -71,6 +71,9 @@ const SignUp = () => {
       // Redirect user to login page after successful registration
       navigate("/login");
 
+      // Successful sign-up message
+      toast.success("Sign-Up Successful");
+
       // Clear form fields
       signUpForm.reset();
     } catch (error) {
