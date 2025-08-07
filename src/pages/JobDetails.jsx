@@ -3,8 +3,12 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useData } from "../context/DataContext";
 import api from "../services/api";
 import { BsChevronLeft } from "react-icons/bs";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
 
 export default function JobDetails() {
+  const { user } = useAuth();
+
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -38,6 +42,12 @@ export default function JobDetails() {
   }, []);
 
   const handleClick = () => {
+    //  Check if user is logged in before proceeding
+    if (!user) {
+      toast.error("Please login to Apply");
+      return;
+    }
+
     // Checks with the user before applying for job
     const confirmApplication = confirm(
       "Are you sure you want to apply for this Job"

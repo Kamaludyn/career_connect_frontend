@@ -1,21 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useData } from "../context/DataContext";
-import api from "../services/api";
 import PlaceholderCards from "../components/PlaceholderCards";
 import MentorshipReqModal from "../components/MentorshipReqModal";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
 
 const MentorshipPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [redirect, setRedirect] = useState(false);
   const [mentorId, setMentorId] = useState(0);
 
+  const { user } = useAuth();
   const { mentors } = useData();
 
   const navigate = useNavigate();
 
   const handleClick = (id) => {
     setMentorId(id); // Stores the selected mentor's ID in state
+
+    //  Check if user is logged in before proceeding
+    if (!user) {
+      toast.error("Please login to request mentorship");
+      return;
+    }
 
     // Sets the redirect state to `true` to navigate to another page or display details
     setRedirect(true);

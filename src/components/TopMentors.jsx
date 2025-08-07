@@ -27,11 +27,12 @@ const TopMentors = () => {
               key={mentor._id}
               className="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg"
             >
-              <h4 className="text-md font-medium">
+              <h4 className="text-md font-extrabold">
                 {mentor.othername} {mentor.surname}
               </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                {mentor.jobTitle} - {mentor.companyName}
+              <p className="text-sm font-extrabold text-gray-600 dark:text-gray-300">
+                {mentor.jobTitle} -{" "}
+                <span className="font-normal">{mentor.bio}</span>
               </p>
               <button
                 className="text-blue-500 dark:text-blue-400 mt-2 block hover:underline"

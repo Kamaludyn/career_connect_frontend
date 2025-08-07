@@ -4,6 +4,8 @@ import { useData } from "../context/DataContext";
 import PlaceholderCards from "../components/PlaceholderCards";
 import JobApplicationModal from "../components/JobApplicationModal";
 import ClipLoader from "react-spinners/ClipLoader";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
 
 const Jobs = () => {
   const [loading, setLoading] = useState({});
@@ -16,6 +18,7 @@ const Jobs = () => {
     location: "",
   });
 
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { jobs, applyForJob } = useData();
 
@@ -53,6 +56,12 @@ const Jobs = () => {
 
   // Function to handle the "Apply Now" button click
   const handleClick = async (job) => {
+    //  Check if user is logged in before proceeding
+    if (!user) {
+      toast.error("Please login to Apply");
+      return;
+    }
+
     // Confirm with the user before applying for the job
     const confirmApplication = confirm(
       "Are you sure you want to apply for this Job"

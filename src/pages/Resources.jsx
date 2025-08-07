@@ -2,15 +2,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useData } from "../context/DataContext";
 import PlaceholderCards from "../components/PlaceholderCards";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
 
 const Resources = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("");
   const navigate = useNavigate();
 
+  const { user } = useAuth();
   const { resources } = useData();
 
-  // Array of predefined categories 
+  // Array of predefined categories
   const categories = [
     "Interview Preparation",
     "Resume & Cover Letter Writing",
@@ -30,12 +33,22 @@ const Resources = () => {
     "Others",
   ];
 
-// Filter resources based on search query and selected category
+  const handleClick = (resource) => {
+    //  Check if user is logged in before proceeding
+    if (!user) {
+      toast.error("Please login to get access");
+      return;
+    }
+
+    // Navigate to the clicked resource detail page
+    navigate(`/resource-details/${resource._id}`);
+  };
+
+  // Filter resources based on search query and selected category
   const filteredResources = resources?.filter(
     (resource) =>
       // Check if the resource title includes the search query (case-insensitive)
       resource.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-
       // If no category is selected, include resources from all categories
       // Otherwise, only include resources matching the selected category
       (category === "" || resource.category === category)
@@ -86,7 +99,7 @@ const Resources = () => {
               </p>
               <button
                 className="mt-2 inline-block text-blue-600"
-                onClick={() => navigate(`/resource-details/${resource._id}`)}
+                onClick={handleClick}
               >
                 Read More
               </button>

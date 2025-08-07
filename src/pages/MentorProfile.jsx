@@ -3,10 +3,14 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import api from "../services/api";
 import MentorshipReqModal from "../components/MentorshipReqModal";
 import { BsPersonCircle, BsChevronLeft } from "react-icons/bs";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
 
 const MentorProfile = () => {
   const [mentorData, setMentorData] = useState({});
   const [redirect, setRedirect] = useState(false);
+
+  const { user } = useAuth();
 
   const location = useLocation();
 
@@ -40,6 +44,15 @@ const MentorProfile = () => {
       setMentorData(mentor);
     }
   }, []);
+
+  const handleClick = () => {
+    //  Check if user is logged in before proceeding
+    if (!user) {
+      toast.error("Please login to request mentorship");
+      return;
+    }
+    setRedirect(true);
+  };
 
   return (
     <>
@@ -82,7 +95,7 @@ const MentorProfile = () => {
           </ul>
           {location?.state ? (
             <button
-              onClick={() => setRedirect(true)}
+              onClick={handleClick}
               className="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
             >
               Request Mentorship
